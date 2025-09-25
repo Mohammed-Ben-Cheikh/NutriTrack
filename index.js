@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import express from "express";
+import express_session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
 import auth from "./middleware/auth.js";
@@ -16,6 +17,22 @@ const PORT = process.env.PORT;
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use(express.json());
+
+app.use(
+  express_session({
+    secret:
+      process.env.SESSION_SECRET ||
+      "your-default-secret-key-change-this-in-production",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false,
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+  })
+);
 
 app.use(auth);
 
