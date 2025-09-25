@@ -2,9 +2,8 @@ import dotenv from "dotenv";
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import router from "./routes/index.js";
 import auth from "./middleware/auth.js";
-import db from "./config/database.js"
+import router from "./routes/index.js";
 
 dotenv.config();
 
@@ -18,7 +17,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(auth)
+app.use(auth);
 
 app.use(router);
 
