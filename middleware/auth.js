@@ -2,13 +2,11 @@
  * User controller function
  * @param {import('express').Request} req - Express request object
  * @param {import('express').Response} res - Express response object
+ * @param {import('express').NextFunction} next - Express next middleware function
  */
 
-export function home(req, res) {
-  res.render("index");
-}
+const auth = (req, res, next) => {
+  next();
+};
 
-export function user() {
-  let user = "name"
-  let file 
-}
+export default auth;

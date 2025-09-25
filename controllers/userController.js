@@ -4,11 +4,7 @@
  * @param {import('express').Response} res - Express response object
  */
 
-export function home(req, res) {
-  res.render("index");
-}
-
-export function user() {
-  let user = "name"
-  let file 
+export function user(req, res) {
+  console.log(req.params.id);
+  res.render("user");
 }
