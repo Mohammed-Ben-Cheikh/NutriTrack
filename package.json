@@ -6,7 +6,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch index.js"
+    "dev": "node --watch index.js",
+    "build-css": "tailwindcss -i ./public/styles/input.css -o ./public/styles/output.css --watch",
+    "build-css-prod": "tailwindcss -i ./public/styles/input.css -o ./public/styles/output.css --minify"
   },
   "repository": {
     "type": "git",
@@ -26,5 +28,10 @@
     "express-session": "^1.18.2",
     "express-validator": "^7.2.1",
     "mysql2": "^3.15.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.13"
   }
 }

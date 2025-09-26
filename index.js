@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import auth from "./middleware/auth.js";
 import router from "./routes/index.js";
+import mainRouter from "./routes/mainRouter.js";
 
 dotenv.config();
 
@@ -33,6 +34,8 @@ app.use(
     },
   })
 );
+
+app.use(mainRouter);
 
 app.use(auth);
 
