@@ -14,7 +14,7 @@ connection.connect((err) => {
     console.log(`erreur de connexion a Mysql: ${err}`);
     return;
   }
-  console.log("vous etre connecte a la base Mysql 🏅");
+  console.log("vous êtes connecte a la base Mysql 🏅");
 });
 
 export default connection;
