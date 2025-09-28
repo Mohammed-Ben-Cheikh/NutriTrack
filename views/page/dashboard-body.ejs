@@ -1,0 +1,234 @@
+<!-- Barre de bienvenue -->
+<div class="mb-6">
+  <h2 class="text-2xl font-bold text-gray-900">
+    Bienvenue sur votre dashboard
+  </h2>
+  <p class="text-gray-600">Suivez votre nutrition et atteignez vos objectifs</p>
+</div>
+
+<!-- Cartes de statistiques -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <!-- Calories d'aujourd'hui -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Calories aujourd'hui</p>
+        <p class="text-2xl font-bold text-gray-900">1,847</p>
+      </div>
+      <div class="p-3 bg-blue-100 rounded-full">
+        <i class="fas fa-fire text-blue-600 text-xl"></i>
+      </div>
+    </div>
+    <div class="mt-4">
+      <div class="bg-gray-200 rounded-full h-2">
+        <div class="bg-indigo-600 h-2 rounded-full" style="width: 74%"></div>
+      </div>
+      <p class="text-xs text-gray-500 mt-1">74% de l'objectif (2,500 cal)</p>
+    </div>
+  </div>
+
+  <!-- Protéines -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Protéines</p>
+        <p class="text-2xl font-bold text-gray-900">89g</p>
+      </div>
+      <div class="p-3 bg-indigo-100 rounded-full">
+        <i class="fas fa-dumbbell text-indigo-600 text-xl"></i>
+      </div>
+    </div>
+    <div class="mt-4">
+      <div class="bg-gray-200 rounded-full h-2">
+        <div class="bg-indigo-600 h-2 rounded-full" style="width: 59%"></div>
+      </div>
+      <p class="text-xs text-gray-500 mt-1">59% de l'objectif (150g)</p>
+    </div>
+  </div>
+
+  <!-- Eau -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Eau</p>
+        <p class="text-2xl font-bold text-gray-900">1.2L</p>
+      </div>
+      <div class="p-3 bg-cyan-100 rounded-full">
+        <i class="fas fa-tint text-cyan-600 text-xl"></i>
+      </div>
+    </div>
+    <div class="mt-4">
+      <div class="bg-gray-200 rounded-full h-2">
+        <div class="bg-cyan-600 h-2 rounded-full" style="width: 48%"></div>
+      </div>
+      <p class="text-xs text-gray-500 mt-1">48% de l'objectif (2.5L)</p>
+    </div>
+  </div>
+
+  <!-- Poids -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Poids actuel</p>
+        <p class="text-2xl font-bold text-gray-900">72.5kg</p>
+      </div>
+      <div class="p-3 bg-purple-100 rounded-full">
+        <i class="fas fa-weight text-purple-600 text-xl"></i>
+      </div>
+    </div>
+    <div class="mt-4">
+      <p class="text-xs text-indigo-600">-0.5kg cette semaine</p>
+      <p class="text-xs text-gray-500">Objectif: 70kg</p>
+    </div>
+  </div>
+</div>
+
+<!-- Section repas et graphiques -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- Repas d'aujourd'hui -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="p-6 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-900">Repas d'aujourd'hui</h3>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 bg-yellow-100 rounded-full">
+            <i class="fas fa-sun text-yellow-600"></i>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900">Petit-déjeuner</p>
+            <p class="text-sm text-gray-500">Avoine avec fruits</p>
+          </div>
+        </div>
+        <span class="text-sm font-medium text-gray-900">320 cal</span>
+      </div>
+
+      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 bg-orange-100 rounded-full">
+            <i class="fas fa-sun text-orange-600"></i>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900">Déjeuner</p>
+            <p class="text-sm text-gray-500">Salade de poulet</p>
+          </div>
+        </div>
+        <span class="text-sm font-medium text-gray-900">580 cal</span>
+      </div>
+
+      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 bg-red-100 rounded-full">
+            <i class="fas fa-moon text-red-600"></i>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900">Dîner</p>
+            <p class="text-sm text-gray-500">Saumon grillé</p>
+          </div>
+        </div>
+        <span class="text-sm font-medium text-gray-900">650 cal</span>
+      </div>
+
+      <button
+        class="w-full mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+      >
+        <i class="fas fa-plus mr-2"></i>
+        Ajouter un repas
+      </button>
+    </div>
+  </div>
+
+  <!-- Graphique des tendances -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="p-6 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-900">
+        Tendance des 7 derniers jours
+      </h3>
+    </div>
+    <div class="p-6">
+      <div class="h-64 flex items-end justify-between space-x-2">
+        <div class="flex flex-col items-center space-y-2">
+          <div class="w-8 bg-indigo-500 rounded-t" style="height: 60%"></div>
+          <span class="text-xs text-gray-500">Lun</span>
+        </div>
+        <div class="flex flex-col items-center space-y-2">
+          <div class="w-8 bg-indigo-500 rounded-t" style="height: 80%"></div>
+          <span class="text-xs text-gray-500">Mar</span>
+        </div>
+        <div class="flex flex-col items-center space-y-2">
+          <div class="w-8 bg-indigo-500 rounded-t" style="height: 45%"></div>
+          <span class="text-xs text-gray-500">Mer</span>
+        </div>
+        <div class="flex flex-col items-center space-y-2">
+          <div class="w-8 bg-indigo-500 rounded-t" style="height: 90%"></div>
+          <span class="text-xs text-gray-500">Jeu</span>
+        </div>
+        <div class="flex flex-col items-center space-y-2">
+          <div class="w-8 bg-indigo-500 rounded-t" style="height: 70%"></div>
+          <span class="text-xs text-gray-500">Ven</span>
+        </div>
+        <div class="flex flex-col items-center space-y-2">
+          <div class="w-8 bg-indigo-500 rounded-t" style="height: 85%"></div>
+          <span class="text-xs text-gray-500">Sam</span>
+        </div>
+        <div class="flex flex-col items-center space-y-2">
+          <div class="w-8 bg-indigo-600 rounded-t" style="height: 74%"></div>
+          <span class="text-xs text-gray-900 font-medium">Dim</span>
+        </div>
+      </div>
+      <div class="mt-4 text-center">
+        <p class="text-sm text-gray-600">Calories consommées par jour</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section objectifs -->
+<div class="mt-8 bg-white rounded-lg shadow">
+  <div class="p-6 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-900">Objectifs de la semaine</h3>
+  </div>
+  <div class="p-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="text-center">
+        <div
+          class="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4"
+        >
+          <i class="fas fa-check text-indigo-600 text-xl"></i>
+        </div>
+        <h4 class="font-medium text-gray-900 mb-2">Alimentation équilibrée</h4>
+        <p class="text-sm text-gray-600">5/7 jours accomplis</p>
+        <div class="mt-2 bg-gray-200 rounded-full h-2">
+          <div class="bg-indigo-600 h-2 rounded-full" style="width: 71%"></div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <div
+          class="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4"
+        >
+          <i class="fas fa-tint text-indigo-600 text-xl"></i>
+        </div>
+        <h4 class="font-medium text-gray-900 mb-2">Hydratation</h4>
+        <p class="text-sm text-gray-600">Boire 2.5L par jour</p>
+        <div class="mt-2 bg-gray-200 rounded-full h-2">
+          <div class="bg-indigo-600 h-2 rounded-full" style="width: 48%"></div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <div
+          class="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4"
+        >
+          <i class="fas fa-weight text-indigo-600 text-xl"></i>
+        </div>
+        <h4 class="font-medium text-gray-900 mb-2">Perte de poids</h4>
+        <p class="text-sm text-gray-600">-0.5kg cette semaine</p>
+        <div class="mt-2 bg-gray-200 rounded-full h-2">
+          <div class="bg-indigo-600 h-2 rounded-full" style="width: 100%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

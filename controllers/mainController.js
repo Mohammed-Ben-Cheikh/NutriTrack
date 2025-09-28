@@ -5,5 +5,7 @@
  */
 
 export function home(req, res) {
-  res.render("index");
+  const success = req.query.success;
+  const error = req.query.error;
+  return res.render("index", { success, error });
 }

@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 
 //auth route
-
+router.post("/auth/logout",logout)
 
 router.get("/dashboard", dashboard);
 

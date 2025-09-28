@@ -175,7 +175,7 @@ export function logout(req, res) {
         return res.status(500).send("Impossible de déconnecter l'utilisateur");
       }
       res.clearCookie("connect.sid");
-      return res.status(200).send("Déconnexion réussie");
+      return res.status(200).redirect("/?success=Déconnexion réussie");
     });
   } catch (error) {
     console.error("Erreur lors de la déconnexion:", error);
