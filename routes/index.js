@@ -1,7 +1,7 @@
 import express from "express";
 import { logout } from "../controllers/authController.js";
 import { chatBot } from "../controllers/chatController.js";
-import { home } from "../controllers/mainController.js";
+import { dashboard } from "../controllers/dashboardController.js";
 import {
   profileValidateur,
   saveUserProfile,
@@ -11,12 +11,16 @@ import {
 const router = express.Router();
 
 //auth route
-router.post("/auth/logout", logout);
+router.post("/auth/logout",logout)
 
-//main route
-router.get("/", home);
+router.get("/dashboard", dashboard);
+
 router.get("/dashboard/user", userProfilPage);
+router.get("/dashboard/recommendations", userProfilPage);
+router.get("/dashboard/repas", userProfilPage);
 router.post("/user/profil", [profileValidateur], saveUserProfile);
 
 router.post("/chatbot", chatBot);
+
+router.post("/auth/logout", logout);
 export default router;

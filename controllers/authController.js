@@ -37,7 +37,7 @@ export const loginValidateur = [
  */
 export async function registerPage(req, res) {
   if (req.session.isLoggedIn) {
-    return res.redirect("/user");
+    return res.redirect("/dashboard");
   }
   return res.render("register");
 }
@@ -49,7 +49,7 @@ export async function registerPage(req, res) {
  */
 export async function loginPage(req, res) {
   if (req.session.isLoggedIn) {
-    return res.redirect("/user");
+    return res.redirect("/dashboard");
   }
   const success = req.query.success;
   return res.render("login", { success });
@@ -175,7 +175,7 @@ export function logout(req, res) {
         return res.status(500).send("Impossible de déconnecter l'utilisateur");
       }
       res.clearCookie("connect.sid");
-      return res.status(200).send("Déconnexion réussie");
+      return res.status(200).redirect("/?success=Déconnexion réussie");
     });
   } catch (error) {
     console.error("Erreur lors de la déconnexion:", error);
