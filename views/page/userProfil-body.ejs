@@ -1,8 +1,14 @@
-<% const profileData=typeof profile !=='undefined' && profile ? profile : {}; const tailleCm=profileData.taille_cm;
-  const poidsActuel=profileData.poids_actuel_kg; const poidsCible=profileData.poids_cible_kg; const
-  caloriesCible=profileData.calories_cible; const objectifPrincipal=profileData.objectif; const
-  activityLevel=profileData.niveau_activite; const sportDiscipline=profileData.sport_discipline; const imcValue=tailleCm
-  && poidsActuel ? (poidsActuel / Math.pow(tailleCm / 100, 2)).toFixed(1) : null; %>
+<% 
+const profileData=typeof profile !=='undefined' && profile ? profile : {};
+const tailleCm=profileData.taille_cm;
+const poidsActuel=profileData.poids_actuel_kg;
+const poidsCible=profileData.poids_cible_kg;
+const caloriesCible=profileData.calories_cible;
+const objectifPrincipal=profileData.objectif;
+const activityLevel=profileData.niveau_activite;
+const sportDiscipline=profileData.sport_discipline;
+const imcValue=tailleCm&&poidsActuel ? (poidsActuel / Math.pow(tailleCm / 100, 2)).toFixed(1) : null;
+%>
 
 
   <div class="mb-6">
