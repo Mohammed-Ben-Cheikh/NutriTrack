@@ -11,7 +11,9 @@ const auth = (req, res, next) => {
   } else {
     return res
       .status(401)
-      .send("Vous devez être connecté pour accéder à cette ressource");
+      .redirect(
+        "/?error=Vous devez être connecté pour accéder à cette ressource"
+      );
   }
 };
 

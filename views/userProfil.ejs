@@ -1,0 +1,12 @@
+<% const layoutData=
+  { title: 'Profil Utilisateur' ,
+    currentPage: 'profil' ,
+    contentClass: 'p-6' ,
+    body: include('page/userProfil-body',
+          { error: typeof error==='undefined' ? null : error,
+            success: typeof success==='undefined' ? null: success,
+            profile: typeof profile==='undefined' ? {} : profile 
+          })
+  };
+%>
+<%-include('partials/dashboard-layout', layoutData) %>

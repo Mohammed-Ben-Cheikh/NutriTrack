@@ -1,12 +1,13 @@
 import bcryptjs from "bcryptjs";
-import { body } from "express-validator";
+import { body, validationResult } from "express-validator";
 import db from "../config/database.js";
+import User from "../models/User.js";
 
 export const registerValidateur = [
   body("username")
     .trim()
-    .isLength({ min: 2, max: 50 })
-    .withMessage("Le prénom doit contenir entre 2 et 50 caractères"),
+    .isLength({ min: 2, max: 20 })
+    .withMessage("Le prénom doit contenir entre 2 et 20 caractères"),
 
   body("email")
     .isEmail()
@@ -34,8 +35,11 @@ export const loginValidateur = [
  * @param {import('express').Request} req - Express request object
  * @param {import('express').Response} res - Express response object
  */
-export async function registerPage(_, res) {
-  res.render("register");
+export async function registerPage(req, res) {
+  if (req.session.isLoggedIn) {
+    return res.redirect("/dashboard");
+  }
+  return res.render("register");
 }
 
 /**
@@ -43,8 +47,12 @@ export async function registerPage(_, res) {
  * @param {import('express').Request} req - Express request object
  * @param {import('express').Response} res - Express response object
  */
-export async function loginPage(_, res) {
-  res.render("login");
+export async function loginPage(req, res) {
+  if (req.session.isLoggedIn) {
+    return res.redirect("/dashboard");
+  }
+  const success = req.query.success;
+  return res.render("login", { success });
 }
 
 /**
@@ -53,31 +61,51 @@ export async function loginPage(_, res) {
  * @param {import('express').Response} res - Express response object
  */
 export async function register(req, res) {
-  const { username, email, password } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).render("register", {
+      error: errors.array()[0].msg,
+    });
+  }
+  const { username, email, password, confirmPassword } = req.body;
+
+  if (password !== confirmPassword) {
+    return res
+      .status(400)
+      .render("register", { error: "Les mots de passe ne correspondent pas" });
+  }
+
   const findUser = "SELECT * FROM USERS WHERE email = ?";
   try {
-    db.query(findUser, [email], async (err, result) => {
+    db.connect().query(findUser, [email], async (err, result) => {
       if (err) {
         console.error("error in database", err);
-        return res.status(500).send("Failed to register user");
+        return res
+          .status(500)
+          .render("register", { error: "Failed to register user" });
       }
       if (result.length > 0) {
-        return res.status(409).send("This email is already in use");
+        return res
+          .status(409)
+          .render("register", { error: "This email is already in use" });
       }
       const hashedPassword = await bcryptjs.hash(password, 10);
-      const insertUser =
-        "INSERT INTO users (username, email, password) VALUES (?, ?, ?);";
-      db.query(insertUser, [username, email, hashedPassword], (err) => {
-        if (err) {
-          console.error("Error inserting user", err);
-          return res.status(500).send("Failed to register user");
-        }
-        return res.status(201).send("User registered successfully");
-      });
+      const user = new User(email, username, hashedPassword);
+      try {
+        await user.save();
+        return res.redirect("/login?success=User registered successfully");
+      } catch (saveError) {
+        console.error("Error inserting user", saveError);
+        return res
+          .status(500)
+          .render("register", { error: "Failed to register user" });
+      }
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Une erreur inattendue s'est produite");
+    return res
+      .status(500)
+      .render("register", { error: "Une erreur inattendue s'est produite" });
   }
 }
 
@@ -87,23 +115,33 @@ export async function register(req, res) {
  * @param {import('express').Response} res - Express response object
  */
 export async function login(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).render("login", {
+      error: errors.array()[0].msg,
+    });
+  }
   const { email, password } = req.body;
   const findUser = "SELECT * FROM USERS WHERE email = ?";
   try {
-    db.query(findUser, [email], async (err, result) => {
+    db.connect().query(findUser, [email], async (err, result) => {
       if (err) {
         console.error("error in database", err);
-        return res.status(500).send("Failed to login");
+        return res.status(500).render("login", { error: "Failed to login" });
       }
       if (result.length === 0) {
-        return res.status(404).send("Invalid email or password");
+        return res
+          .status(404)
+          .render("login", { error: "Invalid email or password" });
       }
       const isPasswordValid = await bcryptjs.compare(
         password,
         result[0].password
       );
       if (!isPasswordValid) {
-        return res.status(401).send("Invalid email or password");
+        return res
+          .status(401)
+          .render("login", { error: "Invalid email or password" });
       }
       req.session.user = {
         id: result[0].id,
@@ -111,11 +149,13 @@ export async function login(req, res) {
         email: result[0].email,
       };
       req.session.isLoggedIn = true;
-      return res.status(200).send("User logged in successfully");
+      return res.redirect("/dashboard/user");
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Une erreur inattendue s'est produite");
+    return res
+      .status(500)
+      .render("login", { error: "Une erreur inattendue s'est produite" });
   }
 }
 
@@ -135,7 +175,7 @@ export function logout(req, res) {
         return res.status(500).send("Impossible de déconnecter l'utilisateur");
       }
       res.clearCookie("connect.sid");
-      return res.status(200).send("Déconnexion réussie");
+      return res.status(200).redirect("/?success=Déconnexion réussie");
     });
   } catch (error) {
     console.error("Erreur lors de la déconnexion:", error);

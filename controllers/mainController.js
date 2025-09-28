@@ -5,10 +5,7 @@
  */
 
 export function home(req, res) {
-  res.render("index");
-}
-
-export function user() {
-  let user = "name"
-  let file 
+  const success = req.query.success;
+  const error = req.query.error;
+  return res.render("index", { success, error });
 }
