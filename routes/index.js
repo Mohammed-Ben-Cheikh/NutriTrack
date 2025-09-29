@@ -16,6 +16,7 @@ router.post("/auth/logout",logout)
 router.get("/dashboard", dashboard);
 
 router.get("/dashboard/user", userProfilPage);
+router.get("/dashboard/meal", userProfilPage);
 router.get("/dashboard/recommendations", userProfilPage);
 router.get("/dashboard/repas", userProfilPage);
 router.post("/user/profil", [profileValidateur], saveUserProfile);

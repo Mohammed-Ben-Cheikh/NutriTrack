@@ -4,11 +4,6 @@ class Database {
   constructor() {
     this.connection = null;
   }
-<<<<<<< HEAD
-  console.log("vous êtes connecte a la base Mysql 🏅");
-});
-=======
->>>>>>> bd43f208357b48de937a820dcc0ce30ce7935f49
 
   connect() {
     if (this.connection) return this.connection;
