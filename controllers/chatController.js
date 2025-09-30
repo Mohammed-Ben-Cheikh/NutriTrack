@@ -29,7 +29,7 @@ export async function saveMeal(req, res) {
 
     const meal = new Meal(req.session.user.id, aiResponse);
     console.log(meal);
-    
+
     if (checkRateLimit) {
       return res.json({
         error: true,
