@@ -29,7 +29,16 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   lipides_pct TINYINT UNSIGNED NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
+
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_user_profile (user_id)
+);
+
+CREATE TABLE IF NOT EXISTS meals (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  body TEXT NULL,
+  created_at DATE DEFAULT (CURRENT_DATE),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   UNIQUE KEY unique_user_profile (user_id)
 );
