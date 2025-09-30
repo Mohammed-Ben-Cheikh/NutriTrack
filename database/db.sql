@@ -40,5 +40,5 @@ CREATE TABLE IF NOT EXISTS meals (
   body TEXT NULL,
   created_at DATE DEFAULT (CURRENT_DATE),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  UNIQUE KEY unique_user_profile (user_id)
 );
+

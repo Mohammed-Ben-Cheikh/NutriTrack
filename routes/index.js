@@ -1,6 +1,6 @@
 import express from "express";
 import { logout } from "../controllers/authController.js";
-import { chatBot } from "../controllers/chatController.js";
+import { chatBot, saveMeal } from "../controllers/chatController.js";
 import { dashboard } from "../controllers/dashboardController.js";
 import {
   profileValidateur,
@@ -19,6 +19,7 @@ router.get("/dashboard/user", userProfilPage);
 
 router.get("/dashboard/recommendations", userProfilPage);
 router.get("/dashboard/repas", chatBot);
+router.post("/save/repas", saveMeal);
 
 router.post("/user/profil", [profileValidateur], saveUserProfile);
 

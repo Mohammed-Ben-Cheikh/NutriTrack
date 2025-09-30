@@ -20,27 +20,20 @@ export async function saveMeal(req, res) {
     return res.redirect("/login");
   }
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).render("userProfil", {
-      error: errors.array()[0].msg,
-      profile: req.body,
-      user: req.session.user,
-    });
-  }
-
-  const { body } = req.body;
+  const aiResponse = req.body.aiResponse;
+  console.log(aiResponse);
 
   try {
     // Check if Rate Limit 5/DAY
     const checkRateLimit = await Meal.rateLimit(req.session.user.id);
 
-    const meal = new Meal(req.session.user.id, body);
-
+    const meal = new Meal(req.session.user.id, aiResponse);
+    console.log(meal);
+    
     if (checkRateLimit) {
       return res.json({
         error: true,
-        message:"Vous pouvez sauvgarder jusqu'à 5 repas par jour",
+        message: "Vous pouvez sauvgarder jusqu'à 5 repas par jour",
       });
     } else {
       await meal.save();

@@ -2,7 +2,7 @@ import db from "../config/database.js";
 class Meal {
   body;
   userId;
-  constructor(body, userId) {
+  constructor(userId,body) {
     this.body = body;
     this.userId = userId;
   }
