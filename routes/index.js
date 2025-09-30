@@ -11,17 +11,16 @@ import {
 const router = express.Router();
 
 //auth route
-router.post("/auth/logout",logout)
+router.post("/auth/logout", logout);
 
 router.get("/dashboard", dashboard);
 
 router.get("/dashboard/user", userProfilPage);
-router.get("/dashboard/meal", userProfilPage);
-router.get("/dashboard/recommendations", userProfilPage);
-router.get("/dashboard/repas", userProfilPage);
-router.post("/user/profil", [profileValidateur], saveUserProfile);
 
-router.post("/chatbot", chatBot);
+router.get("/dashboard/recommendations", userProfilPage);
+router.get("/dashboard/repas", chatBot);
+
+router.post("/user/profil", [profileValidateur], saveUserProfile);
 
 router.post("/auth/logout", logout);
 export default router;

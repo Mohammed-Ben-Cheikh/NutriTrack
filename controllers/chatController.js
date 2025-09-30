@@ -5,5 +5,5 @@
  */
 
 export function chatBot(req, res) {
-  res.render("dashboard-scanner");
+  res.render("chat");
 }

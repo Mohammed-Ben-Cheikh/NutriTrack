@@ -103,95 +103,433 @@
   </header>
 
   <!-- Hero Section -->
-  <div class="bg-gradient-to-r from-indigo-500 to-blue-600">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+  <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 relative overflow-hidden">
+    <!-- Background decorative elements -->
+    <div class="absolute inset-0 bg-black opacity-10"></div>
+    <div class="absolute top-0 left-0 w-full h-full">
+      <div class="absolute top-10 left-10 w-20 h-20 bg-white opacity-10 rounded-full"></div>
+      <div class="absolute top-40 right-20 w-32 h-32 bg-white opacity-5 rounded-full"></div>
+      <div class="absolute bottom-20 left-1/4 w-16 h-16 bg-white opacity-10 rounded-full"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
       <div class="text-center">
-        <h1 class="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
-          Bienvenue sur <span class="text-indigo-200">NutriTrack</span>
+        <!-- AI Badge -->
+        <div class="inline-flex items-center px-4 py-2 rounded-full bg-white bg-opacity-20 backdrop-blur-sm mb-8">
+          <svg class="w-5 h-5 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="text-white font-medium text-sm">100% Intelligence Artificielle</span>
+        </div>
+
+        <h1 class="text-5xl font-extrabold text-white sm:text-6xl md:text-7xl leading-tight">
+          Votre <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">Nutritionniste IA</span><br>
+          Personnel
         </h1>
-        <p class="mt-3 max-w-md mx-auto text-xl text-indigo-100 sm:text-2xl md:mt-5 md:max-w-3xl">
-          Votre accompagnateur nutritionnel intelligent pour un suivi
-          quotidien de vos habitudes alimentaires
+        
+        <p class="mt-6 max-w-3xl mx-auto text-xl text-indigo-100 sm:text-2xl md:mt-8 leading-relaxed">
+          Révolutionnez votre nutrition avec notre assistant IA avancé. 
+          Analyses précises, recommandations personnalisées et suivi intelligent - 
+          <span class="font-semibold text-white">tout powered by AI</span>.
         </p>
-        <div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-          <div class="rounded-md shadow">
-            <a href="/register"
-              class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
-              Commencer gratuitement
-            </a>
+
+        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <a href="/register"
+            class="group relative px-8 py-4 bg-white text-indigo-600 font-bold text-lg rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-300 flex items-center">
+            <svg class="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+            </svg>
+            Commencer avec l'IA
+          </a>
+          
+          <a href="/demo"
+            class="px-8 py-4 border-2 border-white text-white font-semibold text-lg rounded-xl hover:bg-white hover:text-indigo-600 transition-all duration-300 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Découvrir demo de l'IA
+          </a>
+        </div>
+
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-white">99.2%</div>
+            <div class="text-indigo-200 mt-1">Précision IA</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-white">24/7</div>
+            <div class="text-indigo-200 mt-1">Assistant IA Disponible</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-white">10K+</div>
+            <div class="text-indigo-200 mt-1">Aliments Analysés par IA</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Features Section -->
-  <div class="py-12 bg-white">
+  <!-- AI Features Section -->
+  <div id="features" class="py-20 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="lg:text-center">
-        <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">
-          Fonctionnalités
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center px-4 py-2 rounded-full bg-indigo-100 text-indigo-600 font-medium text-sm mb-4">
+          <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Intelligence Artificielle Avancée
+        </div>
+        <h2 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
+          Votre Nutritionniste IA <span class="text-indigo-600">Personnalisé</span>
         </h2>
-        <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-          Tout ce dont vous avez besoin pour une nutrition optimale
+        <p class="mt-4 max-w-3xl mx-auto text-xl text-gray-600">
+          Découvrez la puissance de l'IA appliquée à la nutrition. Notre technologie avancée 
+          révolutionne votre approche de l'alimentation avec une précision scientifique.
         </p>
       </div>
 
-      <div class="mt-10">
-        <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-3 md:gap-x-8 md:gap-y-10">
-          <!-- Feature 1 -->
-          <div class="relative">
-            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            <p class="ml-16 text-lg leading-6 font-medium text-gray-900">
-              Suivi quotidien
-            </p>
-            <p class="mt-2 ml-16 text-base text-gray-500">
-              Enregistrez facilement vos repas et suivez vos habitudes
-              alimentaires au quotidien.
-            </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- AI Feature 1 -->
+        <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 group hover:-translate-y-2">
+          <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
           </div>
-
-          <!-- Feature 2 -->
-          <div class="relative">
-            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <p class="ml-16 text-lg leading-6 font-medium text-gray-900">
-              Outils intelligents
-            </p>
-            <p class="mt-2 ml-16 text-base text-gray-500">
-              Bénéficiez d'analyses et de recommandations personnalisées
-              basées sur vos données.
-            </p>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Analyse IA Instantanée</h3>
+          <p class="text-gray-600 mb-4">
+            Notre IA analyse instantanément la composition nutritionnelle de vos repas avec une précision de 99,2%. 
+            Reconnaissance automatique d'aliments et calculs nutritionnels en temps réel.
+          </p>
+          <div class="flex items-center text-indigo-600 font-medium">
+            <span>Précision scientifique</span>
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
           </div>
+        </div>
 
-          <!-- Feature 3 -->
-          <div class="relative">
-            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            </div>
-            <p class="ml-16 text-lg leading-6 font-medium text-gray-900">
-              Adhésion thérapeutique
-            </p>
-            <p class="mt-2 ml-16 text-base text-gray-500">
-              Renforcez votre engagement santé avec des outils interactifs et
-              motivants.
-            </p>
+        <!-- AI Feature 2 -->
+        <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 group hover:-translate-y-2">
+          <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Recommandations IA Personnalisées</h3>
+          <p class="text-gray-600 mb-4">
+            Recevez des conseils nutritionnels sur-mesure générés par notre IA. 
+            Adaptation continue selon vos objectifs, contraintes et préférences alimentaires.
+          </p>
+          <div class="flex items-center text-purple-600 font-medium">
+            <span>Personnalisation totale</span>
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- AI Feature 3 -->
+        <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 group hover:-translate-y-2">
+          <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Prédictions IA Intelligentes</h3>
+          <p class="text-gray-600 mb-4">
+            Notre IA prédit vos besoins nutritionnels futurs et anticipe vos carences. 
+            Alertes proactives et suggestions d'ajustements avant même que les problèmes n'apparaissent.
+          </p>
+          <div class="flex items-center text-green-600 font-medium">
+            <span>Prévention intelligente</span>
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- AI Feature 4 -->
+        <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 group hover:-translate-y-2">
+          <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Assistant IA Conversationnel</h3>
+          <p class="text-gray-600 mb-4">
+            Posez vos questions nutrition à notre IA conversationnelle 24/7. 
+            Réponses expertes instantanées, explications détaillées et conseils pratiques.
+          </p>
+          <div class="flex items-center text-blue-600 font-medium">
+            <span>Support 24/7</span>
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- AI Feature 5 -->
+        <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 group hover:-translate-y-2">
+          <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Planification IA Adaptive</h3>
+          <p class="text-gray-600 mb-4">
+            Notre IA génère automatiquement vos menus selon vos contraintes (budget, temps, goûts). 
+            Plans adaptatifs qui évoluent avec vos résultats et préférences.
+          </p>
+          <div class="flex items-center text-orange-600 font-medium">
+            <span>Automatisation complète</span>
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- AI Feature 6 -->
+        <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 group hover:-translate-y-2">
+          <div class="w-16 h-16 bg-gradient-to-br from-teal-500 to-green-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Motivation IA Comportementale</h3>
+          <p class="text-gray-600 mb-4">
+            Notre IA analyse vos habitudes et déclenche des interventions motivationnelles personnalisées. 
+            Psychologie comportementale appliquée pour maximiser votre adhésion.
+          </p>
+          <div class="flex items-center text-teal-600 font-medium">
+            <span>Engagement optimisé</span>
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- AI Benefits Section -->
+  <div class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-extrabold text-gray-900 mb-4">
+          Pourquoi Choisir une <span class="text-indigo-600">IA Nutritionnelle</span> ?
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          L'intelligence artificielle révolutionne la nutrition. Découvrez les avantages exclusifs 
+          d'un suivi nutritionnel 100% alimenté par l'IA.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <!-- Left side - Benefits list -->
+        <div class="space-y-8">
+          <div class="flex items-start space-x-4">
+            <div class="flex-shrink-0 w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Précision Scientifique</h3>
+              <p class="text-gray-600">
+                Notre IA traite des milliers de données nutritionnelles simultanément avec une précision 
+                de 99,2%, impossible à atteindre manuellement.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start space-x-4">
+            <div class="flex-shrink-0 w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Disponibilité 24/7</h3>
+              <p class="text-gray-600">
+                Votre nutritionniste IA ne dort jamais. Conseils, analyses et recommandations 
+                disponibles instantanément, à tout moment.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start space-x-4">
+            <div class="flex-shrink-0 w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Apprentissage Continu</h3>
+              <p class="text-gray-600">
+                Notre IA s'améliore constamment grâce au machine learning, intégrant les dernières 
+                recherches nutritionnelles automatiquement.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start space-x-4">
+            <div class="flex-shrink-0 w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Personnalisation Extrême</h3>
+              <p class="text-gray-600">
+                Chaque recommandation est unique à votre profil : métabolisme, objectifs, 
+                contraintes et préférences analysées par l'IA.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right side - Visual representation -->
+        <div class="relative">
+          <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-8 h-96 flex items-center justify-center">
+            <div class="text-center">
+              <div class="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-2">Intelligence Artificielle</h3>
+              <p class="text-gray-600 mb-6">Analyse en temps réel</p>
+              
+              <div class="grid grid-cols-2 gap-4 text-sm">
+                <div class="bg-white rounded-lg p-3 shadow-sm">
+                  <div class="text-2xl font-bold text-indigo-600">10K+</div>
+                  <div class="text-gray-500">Aliments</div>
+                </div>
+                <div class="bg-white rounded-lg p-3 shadow-sm">
+                  <div class="text-2xl font-bold text-purple-600">99.2%</div>
+                  <div class="text-gray-500">Précision</div>
+                </div>
+                <div class="bg-white rounded-lg p-3 shadow-sm">
+                  <div class="text-2xl font-bold text-green-600">24/7</div>
+                  <div class="text-gray-500">Support</div>
+                </div>
+                <div class="bg-white rounded-lg p-3 shadow-sm">
+                  <div class="text-2xl font-bold text-blue-600">∞</div>
+                  <div class="text-gray-500">Évolutif</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Section -->
+  <div class="py-20 bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-extrabold text-white mb-4">
+          L'IA NutriTrack en <span class="text-indigo-400">Chiffres</span>
+        </h2>
+        <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+          Des résultats mesurables grâce à notre technologie d'intelligence artificielle avancée.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="text-5xl font-bold text-indigo-400 mb-2">99.2%</div>
+          <div class="text-white font-medium mb-1">Précision des analyses IA</div>
+          <div class="text-gray-400 text-sm">Reconnaissance nutritionnelle</div>
+        </div>
+        
+        <div class="text-center">
+          <div class="text-5xl font-bold text-purple-400 mb-2">10K+</div>
+          <div class="text-white font-medium mb-1">Aliments dans la base IA</div>
+          <div class="text-gray-400 text-sm">Mise à jour continue</div>
+        </div>
+        
+        <div class="text-center">
+          <div class="text-5xl font-bold text-green-400 mb-2">2.5s</div>
+          <div class="text-white font-medium mb-1">Temps de réponse IA</div>
+          <div class="text-gray-400 text-sm">Analyse instantanée</div>
+        </div>
+        
+        <div class="text-center">
+          <div class="text-5xl font-bold text-blue-400 mb-2">24/7</div>
+          <div class="text-white font-medium mb-1">Disponibilité IA</div>
+          <div class="text-gray-400 text-sm">Support permanent</div>
+        </div>
+      </div>
+
+      <div class="mt-16 text-center">
+        <a href="/register" 
+           class="inline-flex items-center px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Essayer l'IA Gratuitement
+        </a>
+        <p class="mt-4 text-gray-400">Aucune carte de crédit requise • Configuration en 2 minutes</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final CTA Section -->
+  <div class="py-20 bg-gradient-to-r from-indigo-600 to-purple-700">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+      <h2 class="text-4xl font-extrabold text-white mb-4">
+        Prêt à Révolutionner Votre Nutrition ?
+      </h2>
+      <p class="text-xl text-indigo-100 mb-8 max-w-2xl mx-auto">
+        Rejoignez des milliers d'utilisateurs qui ont transformé leur alimentation 
+        grâce à notre intelligence artificielle nutritionnelle.
+      </p>
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a href="/register" 
+           class="px-8 py-4 bg-white text-indigo-600 font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+          </svg>
+          Découvrir l'IA Nutritionnelle
+        </a>
+        
+        <a href="/demo" 
+           class="px-8 py-4 border-2 border-white text-white font-semibold text-lg rounded-xl hover:bg-white hover:text-indigo-600 transition-all duration-300 flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Voir Démo IA
+        </a>
+      </div>
+      
+      <div class="mt-8 flex flex-wrap justify-center items-center gap-6 text-indigo-100">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>Gratuit 30 jours</span>
+        </div>
+        <div class="flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>Sans engagement</span>
+        </div>
+        <div class="flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>Support IA 24/7</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     function dismissAlert(alertId) {
       const element = document.getElementById(alertId);
