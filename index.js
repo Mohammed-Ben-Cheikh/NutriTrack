@@ -98,12 +98,7 @@ Détection automatique d’écarts (ex. trop peu de protéines pour un sportif, 
       api: process.env.GOOGLE_API_KEY,
       error: "Server error",
       details: err.message,
-    });
-  }
-});
-
-app.use(auth);
-
+    }); } }); app.use(auth);
 app.use(router);
 
 app.listen(PORT, () => {

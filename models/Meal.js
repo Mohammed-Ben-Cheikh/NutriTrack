@@ -1,5 +1,5 @@
 import db from "../config/database.js";
-class Ai {
+class Meal {
   body;
   userId;
   constructor(body, userId) {
@@ -24,6 +24,21 @@ class Ai {
       );
     });
   }
+
+  static rateLimit(userId) {
+    return new Promise((resolve, reject) => {
+      const checkRateLimit =
+        "SELECT COUNT(*) as count FROM meals WHERE user_id = ? and DATE(created_at) = CURRENT_DATE";
+      db.connect().query(checkRateLimit, [userId], (err, result) => {
+        if (err) {
+          console.error("Error checking Meal Rate limit", err);
+          reject(err);
+        } else {
+          resolve(result[0].count > 0);
+        }
+      });
+    });
+  }
 }
 
-export default Ai;
+export default Meal;

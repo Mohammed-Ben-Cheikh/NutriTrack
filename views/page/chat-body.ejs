@@ -182,12 +182,22 @@
         ></div>
 
         <div class="mt-6 pt-6 border-t border-gray-200">
-          <button
-            id="newAnalysisBtn"
-            class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
-          >
-            Nouvelle analyse
-          </button>
+          <div class="flex flex-col sm:flex-row gap-3 flex justify-between sm:justify-end">
+            <button
+              id="newAnalysisBtn"
+              class="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+            >
+              <i class="fas fa-redo mr-2"></i>
+              Nouvelle analyse
+            </button>
+            <button
+              id="saveMealBtn"
+              class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            >
+              <i class="fas fa-save mr-2"></i>
+              Enregistrer le repas
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -273,6 +283,7 @@
       this.errorSection = document.getElementById("errorSection");
       this.errorMessage = document.getElementById("errorMessage");
       this.newAnalysisBtn = document.getElementById("newAnalysisBtn");
+      this.saveMealBtn = document.getElementById("saveMealBtn");
     }
 
     setupEventListeners() {
