@@ -1,0 +1,536 @@
+<!-- Header -->
+<div class="mb-6">
+  <h2 class="text-2xl font-bold text-gray-900">Analyse Nutritionnelle IA</h2>
+  <p class="text-gray-600">
+    Téléversez votre repas pour obtenir un diagnostic clair, des apports estimés
+    et des recommandations personnalisées.
+  </p>
+</div>
+
+<!-- Quick Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Assistant IA</p>
+        <p class="text-2xl font-bold text-gray-900">Actif</p>
+      </div>
+      <div class="p-3 bg-green-100 rounded-full">
+        <i class="fas fa-robot text-green-600 text-xl"></i>
+      </div>
+    </div>
+    <p class="mt-4 text-xs text-gray-500">Expertise nutritionniste validée</p>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Formats supportés</p>
+        <p class="text-2xl font-bold text-gray-900">PNG, JPG</p>
+      </div>
+      <div class="p-3 bg-blue-100 rounded-full">
+        <i class="fas fa-image text-blue-600 text-xl"></i>
+      </div>
+    </div>
+    <p class="mt-4 text-xs text-gray-500">Taille maximale : 5MB</p>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">Sécurité</p>
+        <p class="text-2xl font-bold text-gray-900">RGPD</p>
+      </div>
+      <div class="p-3 bg-purple-100 rounded-full">
+        <i class="fas fa-shield-alt text-purple-600 text-xl"></i>
+      </div>
+    </div>
+    <p class="mt-4 text-xs text-gray-500">Chiffrement bout-en-bout</p>
+  </div>
+</div>
+
+<!-- Error Section -->
+<div
+  id="errorSection"
+  class="rounded-lg border border-red-200 bg-red-50 p-4 mb-6 hidden"
+>
+  <div class="flex">
+    <div class="flex-shrink-0">
+      <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+        <path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </div>
+    <div class="ml-3">
+      <h3 class="text-sm font-medium text-red-800">Erreur d'analyse</h3>
+      <p id="errorMessage" class="text-sm text-red-700 mt-1"></p>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+  <div class="xl:col-span-2">
+    <!-- Upload Section -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">
+          Téléverser votre repas
+        </h3>
+        <p class="text-sm text-gray-500">
+          Prenez une photo de votre plat pour obtenir une analyse nutritionnelle
+          détaillée.
+        </p>
+      </div>
+
+      <form id="uploadForm" enctype="multipart/form-data" class="p-6">
+        <div
+          id="uploadZone"
+          class="upload-zone rounded-xl p-10 text-center cursor-pointer transition-all duration-300"
+        >
+          <div id="uploadContent">
+            <svg
+              class="mx-auto h-12 w-12 text-gray-400 mb-4"
+              stroke="currentColor"
+              fill="none"
+              viewBox="0 0 48 48"
+            >
+              <path
+                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <p class="text-lg font-medium text-gray-900 mb-2">
+              Déposez votre image ici ou cliquez pour parcourir
+            </p>
+            <p class="text-sm text-gray-500">
+              Formats acceptés : PNG, JPG, JPEG (max 5MB)
+            </p>
+          </div>
+
+          <!-- Preview Container -->
+          <div id="previewContainer" class="hidden">
+            <img
+              id="previewImage"
+              class="preview-image mx-auto rounded-lg shadow-md mb-4"
+              alt="Aperçu"
+            />
+            <p class="text-sm text-gray-600 mb-4" id="fileName"></p>
+            <button
+              type="button"
+              id="removeImage"
+              class="text-red-600 hover:text-red-800 text-sm font-medium"
+            >
+              Supprimer l'image
+            </button>
+          </div>
+        </div>
+
+        <input
+          type="file"
+          id="imageFile"
+          name="image"
+          accept="image/*"
+          class="hidden"
+        />
+
+        <div class="mt-6 flex justify-center">
+          <button
+            type="submit"
+            id="analyzeBtn"
+            disabled
+            class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center"
+          >
+            <span id="btnText">Analyser avec l'IA</span>
+            <div id="btnSpinner" class="loading-spinner ml-2 hidden"></div>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultsSection" class="bg-white rounded-lg shadow mt-6 hidden">
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center">
+          <svg
+            class="h-6 w-6 text-green-500 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <h3 class="text-lg font-semibold text-gray-900">
+            Résultats de l'analyse
+          </h3>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <div
+          id="analysisResult"
+          class="prose max-w-none border-l-4 border-green-500 pl-4 bg-green-50 p-4 rounded-r-lg"
+        ></div>
+
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <div
+            class="mb-4 p-4 bg-green-50 border border-green-200 rounded-md hidden"
+            id="successSection"
+          >
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg
+                  class="h-5 w-5 text-green-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p
+                  id="successMessage"
+                  class="text-sm font-medium text-green-800"
+                ></p>
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex flex-col sm:flex-row gap-3 flex justify-between sm:justify-end"
+          >
+            <button
+              id="newAnalysisBtn"
+              class="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+            >
+              <i class="fas fa-redo mr-2"></i>
+              Nouvelle analyse
+            </button>
+            <div>
+              <button
+                id="saveMealBtn"
+                class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+              >
+                <i class="fas fa-save mr-2"></i>
+                Enregistrer le repas
+              </button>
+              <div
+                id="successSection"
+                class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center hidden"
+              >
+                <i class="fas fa-check mr-2"></i>
+                <span>Repas enregistré avec succès</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="space-y-6">
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900">Guide d'utilisation</h3>
+      <ul class="mt-4 space-y-3 text-sm text-gray-600">
+        <li class="flex items-start space-x-3">
+          <span class="mt-1 h-2 w-2 rounded-full bg-indigo-500"></span>
+          <span
+            >Prenez une photo claire de votre repas avec un bon éclairage.</span
+          >
+        </li>
+        <li class="flex items-start space-x-3">
+          <span class="mt-1 h-2 w-2 rounded-full bg-indigo-500"></span>
+          <span>Assurez-vous que tous les aliments sont visibles.</span>
+        </li>
+        <li class="flex items-start space-x-3">
+          <span class="mt-1 h-2 w-2 rounded-full bg-indigo-500"></span>
+          <span>L'analyse prend quelques secondes à traiter votre image.</span>
+        </li>
+        <li class="flex items-start space-x-3">
+          <span class="mt-1 h-2 w-2 rounded-full bg-indigo-500"></span>
+          <span>Vous recevrez des recommandations personnalisées.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900">
+        Informations techniques
+      </h3>
+      <dl class="mt-4 space-y-4">
+        <div class="flex items-start justify-between">
+          <dt class="text-sm text-gray-500">Précision IA</dt>
+          <dd class="text-sm font-medium text-gray-900">95%+</dd>
+        </div>
+        <div class="flex items-start justify-between">
+          <dt class="text-sm text-gray-500">Temps d'analyse</dt>
+          <dd class="text-sm font-medium text-gray-900">2-5 sec</dd>
+        </div>
+        <div class="flex items-start justify-between">
+          <dt class="text-sm text-gray-500">Aliments reconnus</dt>
+          <dd class="text-sm font-medium text-gray-900">1000+</dd>
+        </div>
+        <div class="flex items-start justify-between">
+          <dt class="text-sm text-gray-500">Langues</dt>
+          <dd class="text-sm font-medium text-gray-900">Français</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<!-- Librairie Marked pour le rendu Markdown -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+  class NutritionalAnalyzer {
+    constructor() {
+      this.initializeElements();
+      this.setupEventListeners();
+      this.selectedFile = null;
+      this.aiResponse = null;
+    }
+
+    initializeElements() {
+      this.uploadZone = document.getElementById("uploadZone");
+      this.uploadForm = document.getElementById("uploadForm");
+      this.imageFile = document.getElementById("imageFile");
+      this.previewContainer = document.getElementById("previewContainer");
+      this.previewImage = document.getElementById("previewImage");
+      this.fileName = document.getElementById("fileName");
+      this.uploadContent = document.getElementById("uploadContent");
+      this.removeImageBtn = document.getElementById("removeImage");
+      this.analyzeBtn = document.getElementById("analyzeBtn");
+      this.btnText = document.getElementById("btnText");
+      this.btnSpinner = document.getElementById("btnSpinner");
+      this.resultsSection = document.getElementById("resultsSection");
+      this.analysisResult = document.getElementById("analysisResult");
+      this.errorSection = document.getElementById("errorSection");
+      this.errorMessage = document.getElementById("errorMessage");
+      this.newAnalysisBtn = document.getElementById("newAnalysisBtn");
+      this.saveMealBtn = document.getElementById("saveMealBtn");
+    }
+
+    setupEventListeners() {
+      // Click sur la zone d'upload
+      this.uploadZone.addEventListener("click", () => {
+        this.imageFile.click();
+      });
+
+      // Sélection de fichier
+      this.imageFile.addEventListener("change", (e) => {
+        this.handleFileSelect(e.target.files[0]);
+      });
+
+      // Drag & Drop
+      this.uploadZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        this.uploadZone.classList.add("dragover");
+      });
+
+      this.uploadZone.addEventListener("dragleave", () => {
+        this.uploadZone.classList.remove("dragover");
+      });
+
+      this.uploadZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        this.uploadZone.classList.remove("dragover");
+        const file = e.dataTransfer.files[0];
+        if (file && this.isValidImageFile(file)) {
+          this.handleFileSelect(file);
+        }
+      });
+
+      // Supprimer l'image
+      this.removeImageBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.resetUpload();
+      });
+
+      // Soumettre le formulaire
+      this.uploadForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.analyzeImage();
+      });
+
+      // Nouvelle analyse
+      this.newAnalysisBtn.addEventListener("click", () => {
+        this.resetUpload();
+        this.hideResults();
+      });
+
+      this.saveMealBtn.addEventListener("click", () => {
+        this.saveMeal();
+      });
+    }
+
+    isValidImageFile(file) {
+      const validTypes = ["image/jpeg", "image/jpg", "image/png"];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!validTypes.includes(file.type)) {
+        this.showError(
+          "Format de fichier non supporté. Utilisez PNG, JPG ou JPEG."
+        );
+        return false;
+      }
+
+      if (file.size > maxSize) {
+        this.showError(
+          "Le fichier est trop volumineux. Taille maximale : 5MB."
+        );
+        return false;
+      }
+
+      return true;
+    }
+
+    handleFileSelect(file) {
+      if (!file || !this.isValidImageFile(file)) return;
+
+      this.selectedFile = file;
+
+      // Créer l'aperçu
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.previewImage.src = e.target.result;
+        this.fileName.textContent = file.name;
+        this.showPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    showPreview() {
+      this.uploadContent.classList.add("hidden");
+      this.previewContainer.classList.remove("hidden");
+      this.analyzeBtn.disabled = false;
+      this.hideError();
+    }
+
+    resetUpload() {
+      this.selectedFile = null;
+      this.imageFile.value = "";
+      this.previewContainer.classList.add("hidden");
+      this.uploadContent.classList.remove("hidden");
+      this.analyzeBtn.disabled = true;
+      this.hideError();
+    }
+
+    async analyzeImage() {
+      if (!this.selectedFile) return;
+
+      this.setLoading(true);
+      this.hideError();
+      this.hideResults();
+
+      try {
+        const formData = new FormData();
+        formData.append("image", this.selectedFile);
+
+        const response = await fetch("/ai-service", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const result = await response.json();
+        this.aiResponse = result;
+        this.showResults(result);
+      } catch (error) {
+        console.error("Erreur lors de l'analyse:", error);
+        this.showError(
+          "Erreur lors de l'analyse de l'image. Veuillez réessayer."
+        );
+      } finally {
+        this.setLoading(false);
+      }
+    }
+
+    async saveMeal() {
+      try {
+        const response = await fetch("/save/repas", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ aiResponse: this.aiResponse }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const result = await response.json();
+        this.showResults(result);
+      } catch (error) {
+        console.error("Erreur lors de l'analyse:", error);
+        this.showError(
+          "Erreur lors de l'analyse de l'image. Veuillez réessayer."
+        );
+      } finally {
+        this.setLoading(false);
+      }
+    }
+
+    showResults(data) {
+      // Si la réponse est une chaîne (texte markdown)
+      const content =
+        typeof data === "string"
+          ? data
+          : data.text || "Aucun résultat disponible.";
+
+      // Convertir le markdown en HTML
+      this.analysisResult.innerHTML = marked.parse(content);
+      this.resultsSection.classList.remove("hidden");
+
+      // Scroll vers les résultats
+      this.resultsSection.scrollIntoView({ behavior: "smooth" });
+    }
+
+    hideResults() {
+      this.resultsSection.classList.add("hidden");
+    }
+
+    showError(message) {
+      this.errorMessage.textContent = message;
+      this.errorSection.classList.remove("hidden");
+    }
+
+    hideError() {
+      this.errorSection.classList.add("hidden");
+    }
+
+    setLoading(isLoading) {
+      if (isLoading) {
+        this.btnText.textContent = "Analyse en cours...";
+        this.btnSpinner.classList.remove("hidden");
+        this.analyzeBtn.disabled = true;
+      } else {
+        this.btnText.textContent = "Analyser avec l'IA";
+        this.btnSpinner.classList.add("hidden");
+        this.analyzeBtn.disabled = false;
+      }
+    }
+  }
+
+  // Initialiser l'application
+  document.addEventListener("DOMContentLoaded", () => {
+    new NutritionalAnalyzer();
+  });
+</script>

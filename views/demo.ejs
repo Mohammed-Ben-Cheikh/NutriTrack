@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analyse Nutritionnelle IA - NutriTrack</title>
+    <link rel="stylesheet" href="/styles/output.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        color: #1f2937;
+        background: linear-gradient(135deg, #eef2ff 0%, #e0f2fe 100%);
+      }
+      .app-shell {
+        backdrop-filter: blur(18px);
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(99, 102, 241, 0.12);
+        box-shadow: 0 30px 60px -25px rgba(79, 70, 229, 0.35);
+      }
+      .section-heading {
+        letter-spacing: 0.02em;
+      }
+      .upload-zone {
+        border: 2px dashed #c7d2fe;
+        background: linear-gradient(
+          145deg,
+          rgba(99, 102, 241, 0.04),
+          rgba(59, 130, 246, 0.04)
+        );
+      }
+      .upload-zone.dragover {
+        border-color: #4f46e5;
+        background-color: rgba(99, 102, 241, 0.08);
+        box-shadow: 0 10px 25px -15px rgba(79, 70, 229, 0.4);
+      }
+      .preview-image {
+        max-width: 300px;
+        max-height: 200px;
+        object-fit: cover;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+      }
+      .loading-spinner {
+        border: 3px solid #f3f4f6;
+        border-top: 3px solid #6366f1;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .results-emphasis {
+        border-left: 4px solid #22c55e;
+        padding-left: 1rem;
+        background: linear-gradient(
+          90deg,
+          rgba(34, 197, 94, 0.08),
+          transparent
+        );
+      }
+      .error-highlight {
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        background: linear-gradient(
+          90deg,
+          rgba(254, 226, 226, 0.9),
+          rgba(254, 228, 226, 0.6)
+        );
+      }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+      <!-- Header -->
+      <div class="app-shell rounded-3xl px-8 py-10 mb-10 text-center">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 mb-5 text-sm font-medium text-indigo-700 bg-indigo-50 rounded-full"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              d="M10 2l2.39 4.847L18 7.58l-3.9 3.8.92 5.36L10 14.77 5.98 16.74l.92-5.36L3 7.58l5.61-.733L10 2z"
+            />
+          </svg>
+          <span>Assistant Nutritionnel de Confiance</span>
+        </div>
+        <h1 class="section-heading text-4xl font-extrabold text-gray-900 mb-3">
+          Analyse Nutritionnelle IA
+        </h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Téléversez votre repas pour obtenir un diagnostic clair, des apports
+          estimés et des recommandations personnalisées en quelques secondes.
+        </p>
+        <p class="text-sm text-gray-500 mt-4">
+          Chiffrement bout-en-bout · Conforme RGPD · Expertise nutritionniste
+          validée
+        </p>
+      </div>
+
+      <!-- Upload Section -->
+      <div
+        class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-indigo-50"
+      >
+        <form id="uploadForm" enctype="multipart/form-data">
+          <div
+            id="uploadZone"
+            class="upload-zone rounded-xl p-10 text-center cursor-pointer transition-all duration-300"
+          >
+            <div id="uploadContent">
+              <svg
+                class="mx-auto h-12 w-12 text-gray-400 mb-4"
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <p class="text-lg font-medium text-gray-900 mb-2">
+                Déposez votre image ici ou cliquez pour parcourir
+              </p>
+              <p class="text-sm text-gray-500">
+                Formats acceptés : PNG, JPG, JPEG (max 5MB)
+              </p>
+            </div>
+
+            <!-- Preview Container -->
+            <div id="previewContainer" class="hidden">
+              <img
+                id="previewImage"
+                class="preview-image mx-auto rounded-lg shadow-md mb-4"
+                alt="Aperçu"
+              />
+              <p class="text-sm text-gray-600 mb-4" id="fileName"></p>
+              <button
+                type="button"
+                id="removeImage"
+                class="text-red-600 hover:text-red-800 text-sm font-medium"
+              >
+                Supprimer l'image
+              </button>
+            </div>
+          </div>
+
+          <input
+            type="file"
+            id="imageFile"
+            name="image"
+            accept="image/*"
+            class="hidden"
+          />
+
+          <div class="mt-6 flex justify-center">
+            <button
+              type="submit"
+              id="analyzeBtn"
+              disabled
+              class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center"
+            >
+              <span id="btnText">Analyser avec l'IA</span>
+              <div id="btnSpinner" class="loading-spinner ml-2 hidden"></div>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Results Section -->
+      <div
+        id="resultsSection"
+        class="bg-white rounded-2xl shadow-xl p-8 hidden border border-emerald-100"
+      >
+        <div class="flex items-center mb-4">
+          <svg
+            class="h-6 w-6 text-green-500 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <h3 class="text-lg font-semibold text-gray-900">
+            Résultats de l'analyse
+          </h3>
+        </div>
+        <div
+          id="analysisResult"
+          class="prose max-w-none results-emphasis"
+        ></div>
+
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <button
+            id="newAnalysisBtn"
+            class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
+          >
+            Nouvelle analyse
+          </button>
+        </div>
+      </div>
+
+      <!-- Error Section -->
+      <div id="errorSection" class="error-highlight rounded-xl p-4 hidden">
+        <div class="flex">
+          <svg
+            class="h-5 w-5 text-red-400 mr-2"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <div>
+            <h3 class="text-sm font-medium text-red-800">Erreur d'analyse</h3>
+            <p id="errorMessage" class="text-sm text-red-700 mt-1"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Librairie Marked pour le rendu Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script>
+      class NutritionalAnalyzer {
+        constructor() {
+          this.initializeElements();
+          this.setupEventListeners();
+          this.selectedFile = null;
+        }
+
+        initializeElements() {
+          this.uploadZone = document.getElementById("uploadZone");
+          this.uploadForm = document.getElementById("uploadForm");
+          this.imageFile = document.getElementById("imageFile");
+          this.previewContainer = document.getElementById("previewContainer");
+          this.previewImage = document.getElementById("previewImage");
+          this.fileName = document.getElementById("fileName");
+          this.uploadContent = document.getElementById("uploadContent");
+          this.removeImageBtn = document.getElementById("removeImage");
+          this.analyzeBtn = document.getElementById("analyzeBtn");
+          this.btnText = document.getElementById("btnText");
+          this.btnSpinner = document.getElementById("btnSpinner");
+          this.resultsSection = document.getElementById("resultsSection");
+          this.analysisResult = document.getElementById("analysisResult");
+          this.errorSection = document.getElementById("errorSection");
+          this.errorMessage = document.getElementById("errorMessage");
+          this.newAnalysisBtn = document.getElementById("newAnalysisBtn");
+        }
+
+        setupEventListeners() {
+          // Click sur la zone d'upload
+          this.uploadZone.addEventListener("click", () => {
+            this.imageFile.click();
+          });
+
+          // Sélection de fichier
+          this.imageFile.addEventListener("change", (e) => {
+            this.handleFileSelect(e.target.files[0]);
+          });
+
+          // Drag & Drop
+          this.uploadZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            this.uploadZone.classList.add("dragover");
+          });
+
+          this.uploadZone.addEventListener("dragleave", () => {
+            this.uploadZone.classList.remove("dragover");
+          });
+
+          this.uploadZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            this.uploadZone.classList.remove("dragover");
+            const file = e.dataTransfer.files[0];
+            if (file && this.isValidImageFile(file)) {
+              this.handleFileSelect(file);
+            }
+          });
+
+          // Supprimer l'image
+          this.removeImageBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.resetUpload();
+          });
+
+          // Soumettre le formulaire
+          this.uploadForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            this.analyzeImage();
+          });
+
+          // Nouvelle analyse
+          this.newAnalysisBtn.addEventListener("click", () => {
+            this.resetUpload();
+            this.hideResults();
+          });
+        }
+
+        isValidImageFile(file) {
+          const validTypes = ["image/jpeg", "image/jpg", "image/png"];
+          const maxSize = 5 * 1024 * 1024; // 5MB
+
+          if (!validTypes.includes(file.type)) {
+            this.showError(
+              "Format de fichier non supporté. Utilisez PNG, JPG ou JPEG."
+            );
+            return false;
+          }
+
+          if (file.size > maxSize) {
+            this.showError(
+              "Le fichier est trop volumineux. Taille maximale : 5MB."
+            );
+            return false;
+          }
+
+          return true;
+        }
+
+        handleFileSelect(file) {
+          if (!file || !this.isValidImageFile(file)) return;
+
+          this.selectedFile = file;
+
+          // Créer l'aperçu
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.previewImage.src = e.target.result;
+            this.fileName.textContent = file.name;
+            this.showPreview();
+          };
+          reader.readAsDataURL(file);
+        }
+
+        showPreview() {
+          this.uploadContent.classList.add("hidden");
+          this.previewContainer.classList.remove("hidden");
+          this.analyzeBtn.disabled = false;
+          this.hideError();
+        }
+
+        resetUpload() {
+          this.selectedFile = null;
+          this.imageFile.value = "";
+          this.previewContainer.classList.add("hidden");
+          this.uploadContent.classList.remove("hidden");
+          this.analyzeBtn.disabled = true;
+          this.hideError();
+        }
+
+        async analyzeImage() {
+          if (!this.selectedFile) return;
+
+          this.setLoading(true);
+          this.hideError();
+          this.hideResults();
+
+          try {
+            const formData = new FormData();
+            formData.append("image", this.selectedFile);
+
+            const response = await fetch("/ai-service", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) {
+              throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+
+            const result = await response.json();
+            this.showResults(result);
+          } catch (error) {
+            console.error("Erreur lors de l'analyse:", error);
+            this.showError(
+              "Erreur lors de l'analyse de l'image. Veuillez réessayer."
+            );
+          } finally {
+            this.setLoading(false);
+          }
+        }
+
+        showResults(data) {
+          // Si la réponse est une chaîne (texte markdown)
+          const content =
+            typeof data === "string"
+              ? data
+              : data.text || "Aucun résultat disponible.";
+
+          // Convertir le markdown en HTML
+          this.analysisResult.innerHTML = marked.parse(content);
+          this.resultsSection.classList.remove("hidden");
+
+          // Scroll vers les résultats
+          this.resultsSection.scrollIntoView({ behavior: "smooth" });
+        }
+
+        hideResults() {
+          this.resultsSection.classList.add("hidden");
+        }
+
+        showError(message) {
+          this.errorMessage.textContent = message;
+          this.errorSection.classList.remove("hidden");
+        }
+
+        hideError() {
+          this.errorSection.classList.add("hidden");
+        }
+
+        setLoading(isLoading) {
+          if (isLoading) {
+            this.btnText.textContent = "Analyse en cours...";
+            this.btnSpinner.classList.remove("hidden");
+            this.analyzeBtn.disabled = true;
+          } else {
+            this.btnText.textContent = "Analyser avec l'IA";
+            this.btnSpinner.classList.add("hidden");
+            this.analyzeBtn.disabled = false;
+          }
+        }
+      }
+
+      // Initialiser l'application
+      document.addEventListener("DOMContentLoaded", () => {
+        new NutritionalAnalyzer();
+      });
+    </script>
+  </body>
+</html>

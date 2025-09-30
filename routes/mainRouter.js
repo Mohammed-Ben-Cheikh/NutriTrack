@@ -16,7 +16,9 @@ mainRouter.get("/", home);
 
 mainRouter.get("/login", loginPage);
 mainRouter.get("/register", registerPage);
-
+mainRouter.get("/demo", (req, res) => {
+  res.render("demo");
+});
 mainRouter.post("/auth/login", [loginValidateur], login);
 mainRouter.post("/auth/register", [registerValidateur], register);
 
