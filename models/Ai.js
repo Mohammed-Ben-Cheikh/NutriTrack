@@ -1,5 +1,5 @@
 import db from "../config/database.js";
-class User {
+class Ai {
   body;
   userId;
   constructor(body, userId) {
@@ -9,14 +9,13 @@ class User {
 
   save() {
     return new Promise((resolve, reject) => {
-      const insertUser =
-        "INSERT INTO users (username, email, password) VALUES (?, ?, ?);";
+      const insertMeal = "INSERT INTO meals (user_id, body) VALUES ( ?, ?);";
       db.connect().query(
-        insertUser,
-        [this.username, this.email, this.password],
+        insertMeal,
+        [this.userId, this.body],
         (err, result) => {
           if (err) {
-            console.error("Error inserting user", err);
+            console.error("Error inserting meal", err);
             reject(err);
           } else {
             resolve(result);
@@ -27,4 +26,4 @@ class User {
   }
 }
 
-export default User;
+export default Ai;
