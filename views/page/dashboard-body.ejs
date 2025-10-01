@@ -302,7 +302,6 @@
       statusType: "success",
     },
   ];
-
   let currentPage = 1;
   const itemsPerPage = 5;
   const totalPages = Math.ceil(historyData.length / itemsPerPage);
@@ -500,7 +499,6 @@
     }
   }
 
-  // Event listeners
   document.getElementById("prevPage").addEventListener("click", previousPage);
   document.getElementById("nextPage").addEventListener("click", nextPage);
   document
@@ -514,7 +512,6 @@
     .getElementById("nextPageMobileCards")
     .addEventListener("click", nextPage);
 
-  // Initialize
   document.addEventListener("DOMContentLoaded", function () {
     renderTable();
     renderCards();
