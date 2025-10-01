@@ -81,105 +81,443 @@
   </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-  <!-- Repas d'aujourd'hui -->
-  <div class="bg-white rounded-lg shadow">
-    <div class="p-6 border-b border-gray-200">
-      <h3 class="text-lg font-semibold text-gray-900">Repas d'aujourd'hui</h3>
-    </div>
-    <div class="p-6 space-y-4">
-      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-        <div class="flex items-center space-x-3">
-          <div class="p-2 bg-yellow-100 rounded-full">
-            <i class="fas fa-sun text-yellow-600"></i>
-          </div>
-          <div>
-            <p class="font-medium text-gray-900">Petit-déjeuner</p>
-            <p class="text-sm text-gray-500">Avoine avec fruits</p>
-          </div>
-        </div>
-        <span class="text-sm font-medium text-gray-900">320 cal</span>
+<!-- Section Analyse historique -->
+<div class="bg-white rounded-lg shadow-lg border border-gray-200">
+  <div class="p-4 sm:p-6 border-b border-gray-200">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-0">
+        Analyse historique
+      </h3>
+      <div class="flex items-center space-x-2">
+        <span
+          class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+        >
+          <i class="fas fa-chart-line mr-1"></i>
+          Historique complet
+        </span>
       </div>
-
-      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-        <div class="flex items-center space-x-3">
-          <div class="p-2 bg-orange-100 rounded-full">
-            <i class="fas fa-sun text-orange-600"></i>
-          </div>
-          <div>
-            <p class="font-medium text-gray-900">Déjeuner</p>
-            <p class="text-sm text-gray-500">Salade de poulet</p>
-          </div>
-        </div>
-        <span class="text-sm font-medium text-gray-900">580 cal</span>
-      </div>
-
-      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-        <div class="flex items-center space-x-3">
-          <div class="p-2 bg-red-100 rounded-full">
-            <i class="fas fa-moon text-red-600"></i>
-          </div>
-          <div>
-            <p class="font-medium text-gray-900">Dîner</p>
-            <p class="text-sm text-gray-500">Saumon grillé</p>
-          </div>
-        </div>
-        <span class="text-sm font-medium text-gray-900">650 cal</span>
-      </div>
-
-      <button
-        class="w-full mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-      >
-        <i class="fas fa-plus mr-2"></i>
-        Ajouter un repas
-      </button>
     </div>
   </div>
 
-  <!-- Graphique des tendances -->
-  <div class="bg-white rounded-lg shadow">
-    <div class="p-6 border-b border-gray-200">
-      <h3 class="text-lg font-semibold text-gray-900">
-        Tendance des 7 derniers jours
-      </h3>
-    </div>
-    <div class="p-6">
-      <div class="h-64 flex items-end justify-between space-x-2">
-        <div class="flex flex-col items-center space-y-2">
-          <div class="w-8 bg-indigo-500 rounded-t" style="height: 60%"></div>
-          <span class="text-xs text-gray-500">Lun</span>
+  <!-- Version desktop/tablet - Table with pagination -->
+  <div class="hidden md:block overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th
+            class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Date
+          </th>
+          <th
+            class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            <i class="fas fa-fire mr-1 text-orange-500"></i>Calories
+          </th>
+          <th
+            class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            <i class="fas fa-dumbbell mr-1 text-indigo-500"></i>Protéines
+          </th>
+          <th
+            class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            <i class="fas fa-tint mr-1 text-cyan-500"></i>Eau
+          </th>
+          <th
+            class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            <i class="fas fa-weight mr-1 text-purple-500"></i>Poids
+          </th>
+          <th
+            class="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Statut
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200" id="historyTableBody">
+        <!-- Rows will be populated by JavaScript -->
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+      <div class="flex items-center justify-between">
+        <div class="flex-1 flex justify-between sm:hidden">
+          <button
+            id="prevPageMobile"
+            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
+            Précédent
+          </button>
+          <button
+            id="nextPageMobile"
+            class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
+            Suivant
+          </button>
         </div>
-        <div class="flex flex-col items-center space-y-2">
-          <div class="w-8 bg-indigo-500 rounded-t" style="height: 80%"></div>
-          <span class="text-xs text-gray-500">Mar</span>
-        </div>
-        <div class="flex flex-col items-center space-y-2">
-          <div class="w-8 bg-indigo-500 rounded-t" style="height: 45%"></div>
-          <span class="text-xs text-gray-500">Mer</span>
-        </div>
-        <div class="flex flex-col items-center space-y-2">
-          <div class="w-8 bg-indigo-500 rounded-t" style="height: 90%"></div>
-          <span class="text-xs text-gray-500">Jeu</span>
-        </div>
-        <div class="flex flex-col items-center space-y-2">
-          <div class="w-8 bg-indigo-500 rounded-t" style="height: 70%"></div>
-          <span class="text-xs text-gray-500">Ven</span>
-        </div>
-        <div class="flex flex-col items-center space-y-2">
-          <div class="w-8 bg-indigo-500 rounded-t" style="height: 85%"></div>
-          <span class="text-xs text-gray-500">Sam</span>
-        </div>
-        <div class="flex flex-col items-center space-y-2">
-          <div class="w-8 bg-indigo-600 rounded-t" style="height: 74%"></div>
-          <span class="text-xs text-gray-900 font-medium">Dim</span>
+        <div
+          class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
+        >
+          <div>
+            <p class="text-sm text-gray-700">
+              Affichage de <span id="startEntry" class="font-medium">1</span> à
+              <span id="endEntry" class="font-medium">10</span> sur
+              <span id="totalEntries" class="font-medium">47</span> résultats
+            </p>
+          </div>
+          <div>
+            <nav
+              class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+              aria-label="Pagination"
+            >
+              <button
+                id="prevPage"
+                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                <span class="sr-only">Précédent</span>
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <div id="paginationNumbers" class="flex">
+                <!-- Page numbers will be populated by JavaScript -->
+              </div>
+              <button
+                id="nextPage"
+                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                <span class="sr-only">Suivant</span>
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </nav>
+          </div>
         </div>
       </div>
-      <div class="mt-4 text-center">
-        <p class="text-sm text-gray-600">Calories consommées par jour</p>
+    </div>
+  </div>
+
+  <!-- Version mobile - Cards with pagination -->
+  <div class="md:hidden">
+    <div class="p-4 space-y-4" id="historyCardsContainer">
+      <!-- Cards will be populated by JavaScript -->
+    </div>
+
+    <!-- Mobile pagination -->
+    <div class="px-4 py-3 border-t border-gray-200">
+      <div class="flex items-center justify-between">
+        <button
+          id="prevPageMobileCards"
+          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+        >
+          <i class="fas fa-chevron-left mr-2"></i>Précédent
+        </button>
+        <span id="mobilePageInfo" class="text-sm text-gray-700"
+          >Page 1 sur 5</span
+        >
+        <button
+          id="nextPageMobileCards"
+          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+        >
+          Suivant<i class="fas fa-chevron-right ml-2"></i>
+        </button>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  const historyData = [
+    {
+      date: "Aujourd'hui",
+      status: "En cours",
+      calories: "1,847",
+      proteins: "89g",
+      water: "1.2L",
+      weight: "72.5kg",
+      statusType: "current",
+    },
+    {
+      date: "Hier",
+      status: "Terminé",
+      calories: "2,120",
+      proteins: "125g",
+      water: "2.1L",
+      weight: "73.0kg",
+      statusType: "success",
+    },
+    {
+      date: "Il y a 2 jours",
+      status: "Terminé",
+      calories: "1,950",
+      proteins: "95g",
+      water: "1.8L",
+      weight: "73.2kg",
+      statusType: "failed",
+    },
+    {
+      date: "Il y a 3 jours",
+      status: "Terminé",
+      calories: "2,340",
+      proteins: "140g",
+      water: "2.5L",
+      weight: "73.1kg",
+      statusType: "success",
+    },
+    {
+      date: "Il y a 4 jours",
+      status: "Terminé",
+      calories: "1,780",
+      proteins: "75g",
+      water: "1.5L",
+      weight: "73.5kg",
+      statusType: "failed",
+    },
+    // Add more sample data to demonstrate pagination
+    {
+      date: "Il y a 5 jours",
+      status: "Terminé",
+      calories: "2,200",
+      proteins: "130g",
+      water: "2.3L",
+      weight: "73.3kg",
+      statusType: "success",
+    },
+    {
+      date: "Il y a 6 jours",
+      status: "Terminé",
+      calories: "1,900",
+      proteins: "85g",
+      water: "1.9L",
+      weight: "73.4kg",
+      statusType: "failed",
+    },
+    {
+      date: "Il y a 7 jours",
+      status: "Terminé",
+      calories: "2,100",
+      proteins: "120g",
+      water: "2.4L",
+      weight: "73.2kg",
+      statusType: "success",
+    },
+  ];
+  let currentPage = 1;
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(historyData.length / itemsPerPage);
+
+  function getStatusIcon(statusType) {
+    switch (statusType) {
+      case "current":
+        return '<i class="fas fa-calendar-day text-blue-600 text-sm"></i>';
+      case "success":
+        return '<i class="fas fa-check text-green-600 text-sm"></i>';
+      case "failed":
+        return '<i class="fas fa-times text-red-600 text-sm"></i>';
+      default:
+        return '<i class="fas fa-calendar text-gray-600 text-sm"></i>';
+    }
+  }
+
+  function getStatusBadge(statusType, status) {
+    switch (statusType) {
+      case "current":
+        return '<span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200"><i class="fas fa-clock mr-1"></i>En cours</span>';
+      case "success":
+        return '<span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 border border-green-200"><i class="fas fa-trophy mr-1"></i>Objectif atteint</span>';
+      case "failed":
+        return '<span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 border border-red-200"><i class="fas fa-exclamation-triangle mr-1"></i>Non atteint</span>';
+      default:
+        return '<span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">Terminé</span>';
+    }
+  }
+
+  function getCardBackground(statusType) {
+    switch (statusType) {
+      case "current":
+        return "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200";
+      case "success":
+        return "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200";
+      case "failed":
+        return "bg-gradient-to-r from-red-50 to-pink-50 border-red-200";
+      default:
+        return "bg-gradient-to-r from-gray-50 to-slate-50 border-gray-200";
+    }
+  }
+
+  function renderTable() {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pageData = historyData.slice(startIndex, endIndex);
+
+    const tbody = document.getElementById("historyTableBody");
+    tbody.innerHTML = pageData
+      .map(
+        (item) => `
+    <tr class="hover:bg-gray-50 transition-colors duration-200">
+      <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 w-8 h-8 ${
+            item.statusType === "current"
+              ? "bg-blue-100"
+              : item.statusType === "success"
+              ? "bg-green-100"
+              : "bg-red-100"
+          } rounded-full flex items-center justify-center">
+            ${getStatusIcon(item.statusType)}
+          </div>
+          <div class="ml-3">
+            <div class="text-sm font-medium text-gray-900">${item.date}</div>
+            <div class="text-xs text-gray-500">${item.status}</div>
+          </div>
+        </div>
+      </td>
+      <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${
+        item.calories
+      } cal</td>
+      <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${
+        item.proteins
+      }</td>
+      <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${
+        item.water
+      }</td>
+      <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${
+        item.weight
+      }</td>
+      <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-center">
+        ${getStatusBadge(item.statusType, item.status)}
+      </td>
+    </tr>
+  `
+      )
+      .join("");
+  }
+
+  function renderCards() {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pageData = historyData.slice(startIndex, endIndex);
+
+    const container = document.getElementById("historyCardsContainer");
+    container.innerHTML = pageData
+      .map(
+        (item) => `
+    <div class="${getCardBackground(item.statusType)} rounded-lg p-4 border">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center">
+          <div class="w-10 h-10 ${
+            item.statusType === "current"
+              ? "bg-blue-100"
+              : item.statusType === "success"
+              ? "bg-green-100"
+              : "bg-red-100"
+          } rounded-full flex items-center justify-center">
+            ${getStatusIcon(item.statusType)}
+          </div>
+          <div class="ml-3">
+            <h4 class="font-semibold text-gray-900">${item.date}</h4>
+            <p class="text-xs text-gray-500">${item.status}</p>
+          </div>
+        </div>
+        ${getStatusBadge(item.statusType, item.status)}
+      </div>
+      <div class="grid grid-cols-2 gap-3 text-sm">
+        <div class="flex items-center">
+          <i class="fas fa-fire text-orange-500 mr-2"></i>
+          <span class="font-medium">${item.calories} cal</span>
+        </div>
+        <div class="flex items-center">
+          <i class="fas fa-dumbbell text-indigo-500 mr-2"></i>
+          <span class="font-medium">${item.proteins}</span>
+        </div>
+        <div class="flex items-center">
+          <i class="fas fa-tint text-cyan-500 mr-2"></i>
+          <span class="font-medium">${item.water}</span>
+        </div>
+        <div class="flex items-center">
+          <i class="fas fa-weight text-purple-500 mr-2"></i>
+          <span class="font-medium">${item.weight}</span>
+        </div>
+      </div>
+    </div>
+  `
+      )
+      .join("");
+  }
+
+  function renderPagination() {
+    const startEntry = (currentPage - 1) * itemsPerPage + 1;
+    const endEntry = Math.min(currentPage * itemsPerPage, historyData.length);
+
+    document.getElementById("startEntry").textContent = startEntry;
+    document.getElementById("endEntry").textContent = endEntry;
+    document.getElementById("totalEntries").textContent = historyData.length;
+    document.getElementById(
+      "mobilePageInfo"
+    ).textContent = `Page ${currentPage} sur ${totalPages}`;
+
+    // Render page numbers
+    const paginationNumbers = document.getElementById("paginationNumbers");
+    let numbersHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === currentPage) {
+        numbersHTML += `<button class="relative inline-flex items-center px-4 py-2 border border-indigo-500 bg-indigo-50 text-sm font-medium text-indigo-600">${i}</button>`;
+      } else {
+        numbersHTML += `<button onclick="goToPage(${i})" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">${i}</button>`;
+      }
+    }
+    paginationNumbers.innerHTML = numbersHTML;
+
+    // Update button states
+    document.getElementById("prevPage").disabled = currentPage === 1;
+    document.getElementById("nextPage").disabled = currentPage === totalPages;
+    document.getElementById("prevPageMobile").disabled = currentPage === 1;
+    document.getElementById("nextPageMobile").disabled =
+      currentPage === totalPages;
+    document.getElementById("prevPageMobileCards").disabled = currentPage === 1;
+    document.getElementById("nextPageMobileCards").disabled =
+      currentPage === totalPages;
+  }
+
+  function goToPage(page) {
+    currentPage = page;
+    renderTable();
+    renderCards();
+    renderPagination();
+  }
+
+  function previousPage() {
+    if (currentPage > 1) {
+      goToPage(currentPage - 1);
+    }
+  }
+
+  function nextPage() {
+    if (currentPage < totalPages) {
+      goToPage(currentPage + 1);
+    }
+  }
+
+  document.getElementById("prevPage").addEventListener("click", previousPage);
+  document.getElementById("nextPage").addEventListener("click", nextPage);
+  document
+    .getElementById("prevPageMobile")
+    .addEventListener("click", previousPage);
+  document.getElementById("nextPageMobile").addEventListener("click", nextPage);
+  document
+    .getElementById("prevPageMobileCards")
+    .addEventListener("click", previousPage);
+  document
+    .getElementById("nextPageMobileCards")
+    .addEventListener("click", nextPage);
+
+  document.addEventListener("DOMContentLoaded", function () {
+    renderTable();
+    renderCards();
+    renderPagination();
+  });
+</script>
 
 <div class="mt-8 bg-white rounded-lg shadow">
   <div class="p-6 border-b border-gray-200">
