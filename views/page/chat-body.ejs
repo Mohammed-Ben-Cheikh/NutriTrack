@@ -208,9 +208,7 @@
               </div>
             </div>
           </div>
-          <div
-            class="flex flex-col sm:flex-row gap-3 flex justify-between sm:justify-end"
-          >
+          <div class="flex flex-col sm:flex-row gap-3 flex justify-between">
             <button
               id="newAnalysisBtn"
               class="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
@@ -218,7 +216,7 @@
               <i class="fas fa-redo mr-2"></i>
               Nouvelle analyse
             </button>
-            <div>
+            <div id="saveSection">
               <button
                 id="saveMealBtn"
                 class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
@@ -226,13 +224,6 @@
                 <i class="fas fa-save mr-2"></i>
                 Enregistrer le repas
               </button>
-              <div
-                id="successSection"
-                class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center hidden"
-              >
-                <i class="fas fa-check mr-2"></i>
-                <span>Repas enregistré avec succès</span>
-              </div>
             </div>
           </div>
         </div>
@@ -322,6 +313,7 @@
       this.errorMessage = document.getElementById("errorMessage");
       this.newAnalysisBtn = document.getElementById("newAnalysisBtn");
       this.saveMealBtn = document.getElementById("saveMealBtn");
+      this.saveSection = document.getElementById("saveSection");
     }
 
     setupEventListeners() {
@@ -358,6 +350,7 @@
       this.removeImageBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         this.resetUpload();
+        this.resetSaveButton();
       });
 
       // Soumettre le formulaire
@@ -370,11 +363,32 @@
       this.newAnalysisBtn.addEventListener("click", () => {
         this.resetUpload();
         this.hideResults();
+        this.resetSaveButton();
       });
 
-      this.saveMealBtn.addEventListener("click", () => {
-        this.saveMeal();
-      });
+      this.setupSaveButtonListener();
+    }
+
+    setupSaveButtonListener() {
+      const saveMealBtn = document.getElementById("saveMealBtn");
+      if (saveMealBtn) {
+        saveMealBtn.addEventListener("click", () => {
+          this.saveMeal();
+        });
+      }
+    }
+
+    resetSaveButton() {
+      this.saveSection.innerHTML = `<button
+        id="saveMealBtn"
+        class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+      >
+        <i class="fas fa-save mr-2"></i>
+        Enregistrer le repas
+      </button>`;
+
+      // Réattacher l'event listener
+      this.setupSaveButtonListener();
     }
 
     isValidImageFile(file) {
@@ -403,7 +417,6 @@
 
       this.selectedFile = file;
 
-      // Créer l'aperçu
       const reader = new FileReader();
       reader.onload = (e) => {
         this.previewImage.src = e.target.result;
@@ -464,6 +477,11 @@
 
     async saveMeal() {
       try {
+        const saveMealBtn = document.getElementById("saveMealBtn");
+        saveMealBtn.disabled = true;
+        saveMealBtn.innerHTML =
+          '<i class="fas fa-spinner fa-spin mr-2"></i>Enregistrement...';
+
         const response = await fetch("/save/repas", {
           method: "POST",
           headers: {
@@ -477,14 +495,27 @@
         }
 
         const result = await response.json();
-        this.showResults(result);
+
+        if (result.error) {
+          saveMealBtn.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>${result.message}`;
+          saveMealBtn.className =
+            "px-8 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md cursor-default transition-colors flex items-center justify-center";
+          saveMealBtn.disabled = true;
+        } else if (result.success) {
+          saveMealBtn.innerHTML = `<i class="fas fa-check mr-2"></i>${result.message}`;
+          saveMealBtn.className =
+            "px-8 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md cursor-default transition-colors flex items-center justify-center";
+          saveMealBtn.disabled = true;
+        }
       } catch (error) {
-        console.error("Erreur lors de l'analyse:", error);
+        console.error("Erreur lors de la sauvegarde:", error);
         this.showError(
-          "Erreur lors de l'analyse de l'image. Veuillez réessayer."
+          "Erreur lors de la sauvegarde du repas. Veuillez réessayer."
         );
-      } finally {
-        this.setLoading(false);
+        const saveMealBtn = document.getElementById("saveMealBtn");
+        saveMealBtn.disabled = false;
+        saveMealBtn.innerHTML =
+          '<i class="fas fa-save mr-2"></i>Enregistrer le repas';
       }
     }
 
