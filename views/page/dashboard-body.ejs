@@ -7,90 +7,6 @@
     HTML
   </p>
 </div>
-
-<!-- Report Generation Controls -->
-<div class="bg-white rounded-lg shadow p-6 mb-8">
-  <div class="mb-6">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-      Configuration du Rapport
-    </h3>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Date Selection -->
-      <div>
-        <label
-          for="reportDate"
-          class="block text-sm font-medium text-gray-700 mb-2"
-        >
-          <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Date du rapport
-        </label>
-        <input
-          type="date"
-          id="reportDate"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          value=""
-        />
-      </div>
-
-      <!-- Report Type -->
-      <div>
-        <label
-          for="reportType"
-          class="block text-sm font-medium text-gray-700 mb-2"
-        >
-          <i class="fas fa-file-alt mr-2 text-green-500"></i>Type de rapport
-        </label>
-        <select
-          id="reportType"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          <option value="daily">Rapport quotidien</option>
-          <option value="nutrition">Analyse nutritionnelle</option>
-          <option value="calories">Bilan calorique</option>
-          <option value="complete">Rapport complet</option>
-        </select>
-      </div>
-
-      <!-- Format Selection -->
-      <div>
-        <label
-          for="reportFormat"
-          class="block text-sm font-medium text-gray-700 mb-2"
-        >
-          <i class="fas fa-download mr-2 text-purple-500"></i>Format de sortie
-        </label>
-        <select
-          id="reportFormat"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          <option value="pdf">PDF</option>
-          <option value="html">HTML</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Generate Button -->
-    <div class="mt-6 flex flex-col sm:flex-row gap-4">
-      <button
-        id="generateReportBtn"
-        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center"
-      >
-        <i class="fas fa-magic mr-2"></i>
-        Générer le Rapport
-      </button>
-
-      <button
-        id="downloadReportBtn"
-        class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed"
-        disabled
-      >
-        <i class="fas fa-download mr-2"></i>
-        Télécharger
-      </button>
-    </div>
-  </div>
-</div>
-
 <!-- Report Preview Section -->
 <div class="bg-white rounded-lg shadow-lg border border-gray-200">
   <div class="p-4 sm:p-6 border-b border-gray-200">
@@ -151,7 +67,91 @@
     </div>
   </div>
 </div>
+<br />
+<!-- Report Generation Controls -->
+<div class="bg-white rounded-lg shadow p-6 mb-8">
+  <div class="mb-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+      Configuration du Rapport
+    </h3>
 
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Date Selection -->
+      <div>
+        <label
+          for="reportDate"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          <i class="fas fa-calendar mr-2 text-blue-500"></i>Date du rapport
+        </label>
+        <input
+          type="date"
+          id="reportDate"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      <!-- Report Type -->
+      <div>
+        <label
+          for="reportType"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          <i class="fas fa-file-alt mr-2 text-green-500"></i>Type de rapport
+        </label>
+        <select
+          id="reportType"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="1">Rapport nutritionnel complet</option>
+          <option value="2">Analyse des macronutriments</option>
+          <option value="3">Bilan calorique détaillé</option>
+          <option value="4">Suivi d'hydratation</option>
+          <option value="5">Rapport personnalisé</option>
+        </select>
+      </div>
+
+      <!-- Format Selection (PDF only) -->
+      <div>
+        <label
+          for="reportFormat"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          <i class="fas fa-file-pdf mr-2 text-red-500"></i>Format de sortie
+        </label>
+        <select
+          id="reportFormat"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
+          disabled
+        >
+          <option value="pdf" selected>PDF</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Generate Button -->
+    <div class="mt-6 flex flex-col sm:flex-row gap-4">
+      <button
+        id="generateReportBtn"
+        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center"
+        onclick="generateReport()"
+      >
+        <i class="fas fa-magic mr-2"></i>
+        Générer le Rapport
+      </button>
+
+      <button
+        id="downloadReportBtn"
+        class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed"
+        disabled
+        onclick="downloadReport()"
+      >
+        <i class="fas fa-download mr-2"></i>
+        Télécharger
+      </button>
+    </div>
+  </div>
+</div>
 <script>
   // Sample nutrition data for report generation
   const sampleNutritionData = {
@@ -182,12 +182,36 @@
 
   // Set today's date as default
   document.addEventListener("DOMContentLoaded", function () {
+    console.log("DOM loaded, initializing...");
     const today = new Date().toISOString().split("T")[0];
-    document.getElementById("reportDate").value = today;
+    const dateInput = document.getElementById("reportDate");
+    if (dateInput) {
+      dateInput.value = today;
+      console.log("Date set to:", today);
+    }
+
+    // Add event listeners with error checking
+    const generateBtn = document.getElementById("generateReportBtn");
+    const downloadBtn = document.getElementById("downloadReportBtn");
+
+    if (generateBtn) {
+      generateBtn.addEventListener("click", generateReport);
+      console.log("Generate button listener added");
+    } else {
+      console.error("Generate button not found!");
+    }
+
+    if (downloadBtn) {
+      downloadBtn.addEventListener("click", downloadReport);
+      console.log("Download button listener added");
+    } else {
+      console.error("Download button not found!");
+    }
   });
 
   // Generate report function
   function generateReport() {
+    console.log("Generate report function called");
     const reportDate = document.getElementById("reportDate").value;
     const reportType = document.getElementById("reportType").value;
     const reportFormat = document.getElementById("reportFormat").value;
@@ -196,6 +220,8 @@
       alert("Veuillez sélectionner une date pour le rapport");
       return;
     }
+
+    console.log("Generating report for:", reportDate, reportType, reportFormat);
 
     // Show loading state
     showLoading();
@@ -212,6 +238,7 @@
       showPreview(reportData, reportFormat);
       enableDownload();
       updatePreviewStatus("Généré", "bg-green-100 text-green-800");
+      console.log("Report generated successfully");
     }, 2000);
   }
 
@@ -376,6 +403,7 @@
 
   // Download report function
   function downloadReport() {
+    console.log("Download report function called");
     if (!currentReportData) {
       alert("Veuillez d'abord générer un rapport");
       return;
@@ -475,87 +503,4 @@ HYDRATATION:
       "Note: Pour une vraie application, utilisez une bibliothèque PDF comme jsPDF"
     );
   }
-
-  // Event listeners
-  document
-    .getElementById("generateReportBtn")
-    .addEventListener("click", generateReport);
-  document
-    .getElementById("downloadReportBtn")
-    .addEventListener("click", downloadReport);
 </script>
-
-<div class="mt-8 bg-white rounded-lg shadow">
-  <div class="p-6 border-b border-gray-200">
-    <h3 class="text-lg font-semibold text-gray-900">
-      Formats de Rapport Disponibles
-    </h3>
-  </div>
-  <div class="p-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="text-center">
-        <div
-          class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4"
-        >
-          <i class="fas fa-file-pdf text-red-600 text-xl"></i>
-        </div>
-        <h4 class="font-medium text-gray-900 mb-2">Format PDF</h4>
-        <p class="text-sm text-gray-600">
-          Rapport professionnel imprimable avec mise en page optimisée
-        </p>
-        <div class="mt-4 flex justify-center">
-          <span
-            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800"
-          >
-            <i class="fas fa-check mr-1"></i>
-            Recommandé pour l'impression
-          </span>
-        </div>
-      </div>
-
-      <div class="text-center">
-        <div
-          class="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-full mb-4"
-        >
-          <i class="fas fa-code text-orange-600 text-xl"></i>
-        </div>
-        <h4 class="font-medium text-gray-900 mb-2">Format HTML</h4>
-        <p class="text-sm text-gray-600">
-          Rapport web interactif avec graphiques et tableaux
-        </p>
-        <div class="mt-4 flex justify-center">
-          <span
-            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800"
-          >
-            <i class="fas fa-globe mr-1"></i>
-            Idéal pour le partage en ligne
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-8 bg-blue-50 rounded-lg p-4">
-      <div class="flex items-start">
-        <i class="fas fa-info-circle text-blue-600 text-lg mt-1 mr-3"></i>
-        <div>
-          <h5 class="font-medium text-blue-900 mb-1">
-            Comment utiliser le générateur
-          </h5>
-          <ol class="text-sm text-blue-800 space-y-1 list-decimal list-inside">
-            <li>
-              Sélectionnez la date pour laquelle vous souhaitez générer le
-              rapport
-            </li>
-            <li>
-              Choisissez le type de rapport (quotidien, nutritionnel, etc.)
-            </li>
-            <li>Sélectionnez le format de sortie (PDF ou HTML)</li>
-            <li>Cliquez sur "Générer le Rapport" pour créer l'aperçu</li>
-            <li>Vérifiez le contenu dans l'aperçu</li>
-            <li>Cliquez sur "Télécharger" pour obtenir votre fichier</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
