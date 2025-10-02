@@ -9,36 +9,90 @@ CREATE TABLE users (
 );
 
 CREATE TABLE IF NOT EXISTS user_profiles (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  sexe ENUM('H', 'F') NOT NULL,
-  date_naissance DATE NOT NULL,
-  taille_cm DECIMAL(5,2) NULL,
-  poids_actuel_kg DECIMAL(5,2) NULL,
-  poids_cible_kg DECIMAL(5,2) NULL,
-  niveau_activite ENUM('Sédentaire', 'Modéré', 'Actif', 'Très actif') NULL,
-  sport_discipline ENUM('Aucun', 'Endurance', 'Force', 'Mixte') DEFAULT 'Aucun',
-  frequence_seances TINYINT UNSIGNED NULL,
-  duree_moyenne_min SMALLINT UNSIGNED NULL,
-  depense_energetique SMALLINT UNSIGNED NULL,
-  objectif ENUM('Perte poids', 'Prise masse', 'Maintien', 'Sport', 'Pathologie') NULL,
-  calories_cible SMALLINT UNSIGNED NULL,
-  type_pathologie TEXT NULL,
-  glucides_pct TINYINT UNSIGNED NULL,
-  proteines_pct TINYINT UNSIGNED NULL,
-  lipides_pct TINYINT UNSIGNED NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  UNIQUE KEY unique_user_profile (user_id)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    sexe ENUM('H', 'F') NOT NULL,
+    date_naissance DATE NOT NULL,
+    taille_cm DECIMAL(5, 2) NULL,
+    poids_actuel_kg DECIMAL(5, 2) NULL,
+    poids_cible_kg DECIMAL(5, 2) NULL,
+    niveau_activite ENUM(
+        'Sédentaire',
+        'Modéré',
+        'Actif',
+        'Très actif'
+    ) NULL,
+    sport_discipline ENUM(
+        'Aucun',
+        'Endurance',
+        'Force',
+        'Mixte'
+    ) DEFAULT 'Aucun',
+    frequence_seances TINYINT UNSIGNED NULL,
+    duree_moyenne_min SMALLINT UNSIGNED NULL,
+    depense_energetique SMALLINT UNSIGNED NULL,
+    objectif ENUM(
+        'Perte poids',
+        'Prise masse',
+        'Maintien',
+        'Sport',
+        'Pathologie'
+    ) NULL,
+    calories_cible SMALLINT UNSIGNED NULL,
+    type_pathologie TEXT NULL,
+    glucides_pct TINYINT UNSIGNED NULL,
+    proteines_pct TINYINT UNSIGNED NULL,
+    lipides_pct TINYINT UNSIGNED NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_profile (user_id)
 );
 
 CREATE TABLE IF NOT EXISTS meals (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  body TEXT NULL,
-  created_at DATE DEFAULT (CURRENT_DATE),
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    body TEXT NULL,
+    created_at DATE DEFAULT(CURRENT_DATE),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
+INSERT INTO
+    user_profiles (
+        user_id,
+        sexe,
+        date_naissance,
+        taille_cm,
+        poids_actuel_kg,
+        poids_cible_kg,
+        niveau_activite,
+        sport_discipline,
+        frequence_seances,
+        duree_moyenne_min,
+        depense_energetique,
+        objectif,
+        calories_cible,
+        type_pathologie,
+        glucides_pct,
+        proteines_pct,
+        lipides_pct
+    )
+VALUES (
+        22,
+        'H',
+        '1982-03-27',
+        178.00,
+        95.00,
+        85.00,
+        'Modéré',
+        'Aucun',
+        2,
+        30,
+        250,
+        'Pathologie',
+        2100,
+        'Diabète de type 2',
+        40,
+        30,
+        30
+    )
