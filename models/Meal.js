@@ -42,7 +42,7 @@ class Meal {
 
   static getByUerId(userId) {
     return new Promise((resolve, reject) => {
-      const checkRateLimit = "SELECT * FROM meals WHERE user_id = ?";
+      const checkRateLimit = "SELECT * FROM meals WHERE user_id = ? and DATE(created_at) = CURRENT_DATE()";
       db.connect().query(checkRateLimit, [userId], (err, result) => {
         if (err) {
           console.error("Error checking Meal Rate limit", err);
