@@ -39,6 +39,20 @@ class Meal {
       });
     });
   }
+
+  static getByUerId(userId) {
+    return new Promise((resolve, reject) => {
+      const checkRateLimit = "SELECT * FROM meals WHERE user_id = ?";
+      db.connect().query(checkRateLimit, [userId], (err, result) => {
+        if (err) {
+          console.error("Error checking Meal Rate limit", err);
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
 }
 
 export default Meal;
