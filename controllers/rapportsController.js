@@ -12,7 +12,14 @@ export function rapports(req, res) {
   res.render("rapports");
 }
 
+/**
+ * User controller function
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ */
 
-export async function generateRapports(req, res){
-  
+export async function generateRapports(req, res) {
+  const userId = req.session.user.id;
+  const meals = await new Meal.getByUerId(userId);
+  const userProfile = await new UserProfile.findByUserId(userId);
 }
