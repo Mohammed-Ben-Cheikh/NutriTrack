@@ -57,8 +57,6 @@ ${JSON.stringify(userProfile, null, 2)}
 `;
 
   const recommendations = await aiService(prompt);
-  console.log(recommendations);
-
   res.json(recommendations);
 }
 
