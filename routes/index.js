@@ -18,7 +18,7 @@ const router = express.Router();
 //auth route
 router.post("/auth/logout", logout);
 
-router.get("/dashboard", rapports);
+router.get("/rapports", rapports);
 
 router.get("/dashboard/user", userProfilPage);
 
