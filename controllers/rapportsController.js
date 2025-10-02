@@ -4,6 +4,6 @@
  * @param {import('express').Response} res - Express response object
  */
 
-export function dashboard(req, res) {
-  res.render("dashboard");
+export function rapports(req, res) {
+  res.render("rapports");
 }

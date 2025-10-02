@@ -1,7 +1,7 @@
 import express from "express";
 import { logout } from "../controllers/authController.js";
 import { chatBot, saveMeal } from "../controllers/chatController.js";
-import { dashboard } from "../controllers/dashboardController.js";
+import { rapports } from "../controllers/rapportsController.js";
 import {
   recommendation,
   recomService,
@@ -18,7 +18,7 @@ const router = express.Router();
 //auth route
 router.post("/auth/logout", logout);
 
-router.get("/dashboard", dashboard);
+router.get("/dashboard", rapports);
 
 router.get("/dashboard/user", userProfilPage);
 
