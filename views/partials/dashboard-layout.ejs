@@ -106,8 +106,8 @@
           <div class="px-4 space-y-2">
             <!-- Dashboard -->
             <a
-              href="/dashboard"
-              class="flex items-center px-4 py-3 text-sm font-medium <%= currentPage === 'dashboard' ? 'text-white bg-indigo-600' : 'text-gray-700 hover:bg-gray-100' %> rounded-lg group"
+              href="/rapports"
+              class="flex items-center px-4 py-3 text-sm font-medium <%= currentPage === 'rapports' ? 'text-white bg-indigo-600' : 'text-gray-700 hover:bg-gray-100' %> rounded-lg group"
             >
               <i class="fas fa-tachometer-alt mr-3"></i>
               Rapports
@@ -142,21 +142,8 @@
           </div>
 
           <!-- Section paramètres -->
-          <div class="mt-8 px-4">
-            <h3
-              class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider"
-            >
-              Paramètres
-            </h3>
+          <div class="mt-[90%] px-4">
             <div class="mt-2 space-y-2">
-              <a
-                href="#"
-                class="flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 group"
-              >
-                <i class="fas fa-cog mr-3"></i>
-                Configuration
-              </a>
-
               <form action="/auth/logout" method="POST" class="px-0">
                 <button
                   type="submit"

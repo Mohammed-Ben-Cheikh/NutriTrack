@@ -85,7 +85,6 @@ ${JSON.stringify(userProfile, null, 2)}
 `;
 
   const recommendations = await aiService(prompt);
-
   res.json(recommendations);
 }
 
