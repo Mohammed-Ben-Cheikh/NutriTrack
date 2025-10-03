@@ -96,6 +96,7 @@ ${JSON.stringify(userProfile, null, 2)}
  */
 export async function saveRecom(req, res) {
   const userId = req.session.user.id;
+  
 
   const meals = await Meal.getByUerId(userId);
   const userProfile = await UserProfile.getByUserId(userId);
