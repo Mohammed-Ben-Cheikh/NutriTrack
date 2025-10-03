@@ -20,7 +20,8 @@ export function rapports(req, res) {
 
 export async function rapportService(req, res) {
   const userId = req.session.user.id;
-  const { reportType } = req.body; // Get report type from request body
+  const userName = req.session.user.username;
+  const { reportType } = req.body;
 
   const meals = await Meal.getByUerId(userId);
   const userProfile = await UserProfile.findByUserId(userId);
@@ -43,103 +44,105 @@ export async function rapportService(req, res) {
     .map((meal) => `- ${meal.body} (${meal.created_at})`)
     .join("\n");
 
-  // Determine report focus based on type
   let reportFocus = "";
+  let reportTitle = "";
+
   switch (reportType) {
-    case "1":
-      reportFocus =
-        "Fournir un rapport nutritionnel complet avec toutes les sections détaillées.";
+    case "medical":
+      reportTitle = "Rapport Médical Hebdomadaire - Suivi Patient";
+      reportFocus = `
+        FOCUS MÉDICAL - SUIVI PATIENT:
+        - Analyser les excès de sel et sucre avec graphiques de tendance
+        - Calculer et présenter les écarts glycémiques estimés
+        - Évaluer les risques nutritionnels selon le profil médical
+        - Fournir des recommandations médicales préventives
+        - Inclure des alertes sur les dépassements critiques
+        - Proposer des ajustements alimentaires thérapeutiques
+      `;
       break;
-    case "2":
-      reportFocus =
-        "Mettre l'accent principal sur l'analyse détaillée des macronutriments (glucides, protéines, lipides).";
+    case "athlete":
+      reportTitle = "Rapport Sportif Hebdomadaire - Performance Athlète";
+      reportFocus = `
+        FOCUS SPORTIF - PERFORMANCE ATHLÈTE:
+        - Analyser les courbes de progression nutritionnelle
+        - Corréler l'alimentation avec les performances estimées
+        - Évaluer l'apport énergétique vs dépense sportive
+        - Optimiser la récupération nutritionnelle
+        - Planifier la nutrition pré/post entraînement
+        - Suivre l'hydratation et électrolytes
+      `;
       break;
-    case "3":
-      reportFocus =
-        "Se concentrer principalement sur le bilan calorique avec analyse approfondie des calories.";
-      break;
-    case "4":
-      reportFocus =
-        "Prioriser l'analyse de l'hydratation et des besoins en eau.";
-      break;
-    case "5":
-      reportFocus =
-        "Créer un rapport personnalisé adapté spécifiquement au profil et aux objectifs de l'utilisateur.";
+    case "weight":
+      reportTitle = "Rapport Gestion du Poids Hebdomadaire";
+      reportFocus = `
+        FOCUS GESTION DU POIDS:
+        - Suivre l'évolution du poids avec tendances
+        - Calculer et présenter l'IMC et son évolution
+        - Estimer la masse musculaire vs masse grasse
+        - Analyser la balance calorique hebdomadaire
+        - Identifier les patterns alimentaires problématiques
+        - Proposer des ajustements pour atteindre les objectifs
+      `;
       break;
     default:
-      reportFocus = "Fournir un rapport nutritionnel complet.";
+      reportTitle = "Rapport Nutritionnel Hebdomadaire";
+      reportFocus = "Fournir un rapport nutritionnel hebdomadaire complet.";
   }
 
   const prompt = `
-Vous êtes un assistant spécialisé en nutrition.
-Votre tâche est de générer un **rapport nutritionnel quotidien personnalisé** au format structuré (Markdown → HTML).
+Vous êtes un assistant expert en nutrition et santé.
+Générez un **${reportTitle}** au format HTML structuré.
 
-### Profil Utilisateur
+Commencez le rapport par une salutation personnalisée : "Cher ${userName},"
+
+Profil utilisateur :
 ${JSON.stringify(userProfile, null, 2)}
 
-### Historique des Repas
+Historique des repas (7 derniers jours) :
 ${mealsDescription}
 
-### Focus du Rapport
+Spécialisation du rapport :
 ${reportFocus}
 
-### Instructions pour le Rapport :
-1. Fournir un **bilan calorique global** (calories consommées, objectif estimé, différence).
-2. Détailler les **macronutriments** (glucides, protéines, lipides) avec comparaison aux besoins estimés.
-3. Lister les **repas de la journée** (nom, heure, calories, remarque santé si nécessaire).
-4. Ajouter la partie **hydratation** (consommé vs cible recommandée).
-5. Donner des **recommandations personnalisées** adaptées au profil (athlète, diabétique, perte de poids, etc.).
-6. Retourner le tout en **HTML structuré simple** avec sections bien organisées.
+Instructions :
+- Ajoutez un titre et la période analysée
+- Faites une analyse selon le type de rapport
+- Résumez les apports nutritionnels hebdomadaires
+- Ajoutez des graphiques ASCII simples pour illustrer les tendances
+- Donnez des recommandations adaptées au profil
+- Proposez un plan d'action pour la semaine suivante
 
-⚠️ IMPORTANT: Utilisez une structure HTML claire avec des sections distinctes pour chaque partie.
-
-Exemple de structure attendue :
+Structure attendue :
 <div>
-  <h2>Rapport Nutritionnel Quotidien</h2>
-  <p>Date: ${new Date().toLocaleDateString("fr-FR")}</p>
+  <h2>${reportTitle}</h2>
+  <p> Cher ${userName}, </p>
+  <p>Période : ${new Date(
+    Date.now() - 7 * 24 * 60 * 60 * 1000
+  ).toLocaleDateString("fr-FR")} - ${new Date().toLocaleDateString("fr-FR")}</p>
 </div>
-
 <div>
-  <h3>🔥 Bilan Calorique</h3>
-  <ul>
-    <li><strong>Consommées:</strong> [nombre] kcal</li>
-    <li><strong>Objectif:</strong> [nombre] kcal</li>
-    <li><strong>Différence:</strong> [nombre] kcal</li>
-  </ul>
+  <h3>Analyse</h3>
+  [Analyse spécialisée]
 </div>
-
 <div>
-  <h3>📊 Macronutriments</h3>
-  <table>
-    <thead>
-      <tr><th>Nutriment</th><th>Consommé</th><th>Objectif</th><th>Status</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Protéines</td><td>[nombre]g</td><td>[nombre]g</td><td>[status]</td></tr>
-      <tr><td>Glucides</td><td>[nombre]g</td><td>[nombre]g</td><td>[status]</td></tr>
-      <tr><td>Lipides</td><td>[nombre]g</td><td>[nombre]g</td><td>[status]</td></tr>
-    </tbody>
-  </table>
+  <h3>Tendances</h3>
+  [Graphiques ASCII]
 </div>
-
 <div>
-  <h3>🍽️ Repas de la journée</h3>
-  <ul>
-    <li><strong>[Nom du repas]</strong> - [heure] : [calories] kcal</li>
-  </ul>
-</div>
-
-<div>
-  <h3>💧 Hydratation</h3>
-  <p><strong>Consommation d'eau:</strong> [nombre] L / [objectif] L</p>
-</div>
-
-<div>
-  <h3>💡 Recommandations personnalisées</h3>
-  <p>[recommandations adaptées au profil utilisateur]</p>
+  <h3>Recommandations</h3>
+  [Conseils personnalisés]
 </div>
 `;
 
   const rapport = await aiService(prompt);
-  res.json({ rapport });
+
+  let cleanedRapport = rapport;
+  if (typeof rapport === "string") {
+    cleanedRapport = rapport
+      .replace(/^```html\s*/i, "")
+      .replace(/\s*```$/, "")
+      .trim();
+  }
+
+  res.json({ rapport: cleanedRapport });
 }

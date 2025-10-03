@@ -1,10 +1,10 @@
 <div class="mb-6">
   <h2 class="text-2xl font-bold text-gray-900">
-    Générateur de Rapports Quotidiens
+    Générateur de Rapports Hebdomadaires
   </h2>
   <p class="text-gray-600">
-    Créez et téléchargez vos rapports nutritionnels quotidiens en format PDF ou
-    HTML
+    Créez et téléchargez vos rapports nutritionnels hebdomadaires spécialisés en
+    format PDF ou HTML
   </p>
 </div>
 <!-- Report Preview Section -->
@@ -83,11 +83,14 @@
           class="block text-sm font-medium text-gray-700 mb-2"
         >
           <i class="fas fa-calendar mr-2 text-blue-500"></i>Date du rapport
+          (aujourd'hui)
         </label>
         <input
           type="date"
           id="reportDate"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          readonly
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          title="Les rapports sont générés pour la date d'aujourd'hui uniquement"
         />
       </div>
 
@@ -97,17 +100,16 @@
           for="reportType"
           class="block text-sm font-medium text-gray-700 mb-2"
         >
-          <i class="fas fa-file-alt mr-2 text-green-500"></i>Type de rapport
+          <i class="fas fa-chart-line mr-2 text-green-500"></i>Type de rapport
+          hebdomadaire
         </label>
         <select
           id="reportType"
           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-          <option value="1">Rapport nutritionnel complet</option>
-          <option value="2">Analyse des macronutriments</option>
-          <option value="3">Bilan calorique détaillé</option>
-          <option value="4">Suivi d'hydratation</option>
-          <option value="5">Rapport personnalisé</option>
+          <option value="medical">🏥 Suivi médical - Patients</option>
+          <option value="athlete">🏃‍♂️ Suivi sportif - Athlètes</option>
+          <option value="weight">⚖️ Gestion du poids</option>
         </select>
       </div>
 
@@ -144,7 +146,6 @@
         id="downloadReportBtn"
         class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed"
         disabled
-        onclick="downloadReport()"
       >
         <i class="fas fa-download mr-2"></i>
         Télécharger
@@ -152,19 +153,30 @@
     </div>
   </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
   let currentReportData = null;
   let currentReportFormat = "pdf";
 
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", initializeApp);
+
+  function initializeApp() {
+    setDefaultDate();
+    bindEventListeners();
+  }
+
+  function setDefaultDate() {
     const today = new Date().toISOString().split("T")[0];
     const dateInput = document.getElementById("reportDate");
     if (dateInput) {
       dateInput.value = today;
     }
+  }
 
+  function bindEventListeners() {
     const generateBtn = document.getElementById("generateReportBtn");
     const downloadBtn = document.getElementById("downloadReportBtn");
+    const formatSelect = document.getElementById("reportFormat");
 
     if (generateBtn) {
       generateBtn.addEventListener("click", generateReport);
@@ -177,30 +189,57 @@
     } else {
       console.error("Download button not found!");
     }
-  });
+
+    if (formatSelect) {
+      formatSelect.addEventListener("change", function () {
+        currentReportFormat = this.value;
+        console.log("Format changed to:", currentReportFormat);
+      });
+    } else {
+      console.error("Format select not found!");
+    }
+  }
 
   function generateReport() {
-    const reportDate = document.getElementById("reportDate").value;
-    const reportType = document.getElementById("reportType").value;
-    const reportFormat = document.getElementById("reportFormat").value;
+    const formData = getFormData();
 
-    if (!reportDate) {
-      alert("Veuillez sélectionner une date pour le rapport");
+    if (!validateForm(formData)) {
       return;
     }
 
-    showLoading();
-
+    showLoadingState();
     updatePreviewStatus("Génération...", "bg-yellow-100 text-yellow-800");
 
-    fetch("/rapport-service", {
+    sendReportRequest(formData)
+      .then(handleReportSuccess)
+      .catch(handleReportError);
+  }
+
+  function getFormData() {
+    return {
+      reportDate: document.getElementById("reportDate").value,
+      reportType: document.getElementById("reportType").value,
+      reportFormat: document.getElementById("reportFormat").value,
+    };
+  }
+
+  function validateForm(formData) {
+    if (!formData.reportDate) {
+      alert("Veuillez sélectionner une date pour le rapport");
+      return false;
+    }
+    return true;
+  }
+
+  function sendReportRequest(formData) {
+    return fetch("/rapport-service", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       credentials: "include",
       body: JSON.stringify({
-        reportType: reportType,
+        reportType: formData.reportType,
       }),
     })
       .then((response) => {
@@ -213,242 +252,62 @@
         if (data.error) {
           throw new Error(data.message);
         }
-
-        currentReportData = {
-          date: new Date(reportDate).toLocaleDateString("fr-FR"),
-          type: reportType,
-          htmlContent: data.rapport,
-        };
-        currentReportFormat = reportFormat;
-
-        showDynamicPreview(data.rapport, reportFormat);
-        enableDownload();
-      })
-      .catch((error) => {
-        console.error("Error generating report:", error);
-        updatePreviewStatus("Erreur", "bg-red-100 text-red-800");
-
-        const previewContent = document.getElementById("previewContent");
-        previewContent.innerHTML = `
-        <div class="border rounded-lg p-6 bg-red-50">
-          <div class="text-center">
-            <i class="fas fa-exclamation-triangle text-red-500 text-2xl mb-3"></i>
-            <h4 class="text-lg font-medium text-red-900 mb-2">Erreur lors de la génération</h4>
-            <p class="text-red-700">${error.message}</p>
-          </div>
-        </div>
-      `;
-        previewContent.classList.remove("hidden");
-        document.getElementById("previewLoading").classList.add("hidden");
-        document.getElementById("previewPlaceholder").classList.add("hidden");
+        return { data, formData };
       });
   }
 
-  function showLoading() {
-    document.getElementById("previewPlaceholder").classList.add("hidden");
-    document.getElementById("previewContent").classList.add("hidden");
+  function handleReportSuccess({ data, formData }) {
+    currentReportData = {
+      date: new Date(formData.reportDate).toLocaleDateString("fr-FR"),
+      type: formData.reportType,
+      htmlContent: data.rapport,
+    };
+    currentReportFormat = formData.reportFormat;
+
+    showReportPreview(data.rapport, formData.reportFormat);
+    enableDownloadButton();
+    updatePreviewStatus("Prêt", "bg-green-100 text-green-800");
+  }
+
+  function handleReportError(error) {
+    console.error("Error generating report:", error);
+    updatePreviewStatus("Erreur", "bg-red-100 text-red-800");
+    showErrorState(error.message);
+  }
+
+  function showLoadingState() {
+    hideAllPreviewStates();
     document.getElementById("previewLoading").classList.remove("hidden");
   }
 
-  function showDynamicPreview(htmlContent, format) {
-    document.getElementById("previewLoading").classList.add("hidden");
-    document.getElementById("previewPlaceholder").classList.add("hidden");
+  function showReportPreview(htmlContent, format) {
+    hideAllPreviewStates();
 
     const previewContent = document.getElementById("previewContent");
     const formatClass = format === "pdf" ? "pdf-preview" : "html-preview";
 
-    previewContent.innerHTML = `
-      <div class="${formatClass} border rounded-lg p-6 bg-gray-50">
-        <div class="mb-4 text-right">
-          <span class="text-sm text-gray-600">Format: ${format.toUpperCase()}</span>
-        </div>
-        <div class="ai-generated-content">
-          ${htmlContent}
-        </div>
-      </div>
-    `;
+    previewContent.innerHTML = createPreviewHTML(
+      htmlContent,
+      format,
+      formatClass
+    );
     previewContent.classList.remove("hidden");
 
-    const aiContent = previewContent.querySelector(".ai-generated-content");
-    if (aiContent) {
-      const tables = aiContent.querySelectorAll("table");
-      tables.forEach((table) => {
-        table.className = "w-full border-collapse mb-6";
-        const ths = table.querySelectorAll("th");
-        ths.forEach((th) => {
-          th.className =
-            "px-4 py-2 text-left border-b border-gray-200 bg-gray-50 font-semibold text-gray-700";
-        });
-        const tds = table.querySelectorAll("td");
-        tds.forEach((td) => {
-          td.className = "px-4 py-2 border-b border-gray-100";
-        });
-      });
-
-      const h2s = aiContent.querySelectorAll("h2");
-      h2s.forEach((h2) => {
-        h2.className = "text-2xl font-bold text-gray-900 mb-4";
-      });
-
-      const h3s = aiContent.querySelectorAll("h3");
-      h3s.forEach((h3) => {
-        h3.className = "text-lg font-semibold mb-3 text-blue-600";
-      });
-
-      const uls = aiContent.querySelectorAll("ul");
-      uls.forEach((ul) => {
-        ul.className = "list-disc list-inside mb-4 space-y-2";
-        const lis = ul.querySelectorAll("li");
-        lis.forEach((li) => {
-          li.className = "text-gray-700";
-        });
-      });
-
-      const ps = aiContent.querySelectorAll("p");
-      ps.forEach((p) => {
-        p.className = "text-gray-600 mb-3";
-      });
-
-      const sections = aiContent.querySelectorAll("div");
-      sections.forEach((section, index) => {
-        if (section.querySelector("h3")) {
-          section.className = "bg-white rounded-lg p-4 mb-6 shadow";
-        }
-      });
-
-      const h3Icons = {
-        "Bilan Calorique": "🔥",
-        Macronutriments: "📊",
-        Repas: "🍽️",
-        Hydratation: "💧",
-        Recommandations: "💡",
-      };
-
-      h3s.forEach((h3) => {
-        const text = h3.textContent.trim();
-        for (const [key, icon] of Object.entries(h3Icons)) {
-          if (text.includes(key)) {
-            h3.innerHTML = `<i class="mr-2">${icon}</i>${text}`;
-            break;
-          }
-        }
-      });
-    }
+    applyContentStyling(previewContent);
   }
 
-  function generatePreviewHTML(data, format) {
-    const formatClass = format === "pdf" ? "pdf-preview" : "html-preview";
+  function showErrorState(errorMessage) {
+    hideAllPreviewStates();
 
-    return `
-      <div class="${formatClass} border rounded-lg p-6 bg-gray-50">
-        <div class="mb-6">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-bold text-gray-900">Rapport Nutritionnel Quotidien</h2>
-            <span class="text-sm text-gray-600">Format: ${format.toUpperCase()}</span>
-          </div>
-          <p class="text-gray-600">Date: ${data.date}</p>
-        </div>
+    const previewContent = document.getElementById("previewContent");
+    previewContent.innerHTML = createErrorHTML(errorMessage);
+    previewContent.classList.remove("hidden");
+  }
 
-        <!-- Calories Summary -->
-        <div class="bg-white rounded-lg p-4 mb-6 shadow">
-          <h3 class="text-lg font-semibold mb-3 text-blue-600">
-            <i class="fas fa-fire mr-2"></i>Bilan Calorique
-          </h3>
-          <div class="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div class="text-2xl font-bold text-green-600">${
-                data.calories.consumed
-              }</div>
-              <div class="text-sm text-gray-600">Consommées</div>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-blue-600">${
-                data.calories.target
-              }</div>
-              <div class="text-sm text-gray-600">Objectif</div>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-orange-600">${
-                data.calories.remaining
-              }</div>
-              <div class="text-sm text-gray-600">Restantes</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Macronutrients -->
-        <div class="bg-white rounded-lg p-4 mb-6 shadow">
-          <h3 class="text-lg font-semibold mb-3 text-purple-600">
-            <i class="fas fa-chart-pie mr-2"></i>Macronutriments
-          </h3>
-          <div class="space-y-3">
-            ${Object.entries(data.macros)
-              .map(
-                ([key, macro]) => `
-              <div class="flex items-center justify-between">
-                <span class="capitalize font-medium">${
-                  key === "carbs"
-                    ? "Glucides"
-                    : key === "protein"
-                    ? "Protéines"
-                    : "Lipides"
-                }</span>
-                <span>${macro.consumed}${macro.unit} / ${macro.target}${
-                  macro.unit
-                }</span>
-                <div class="w-24 bg-gray-200 rounded-full h-2">
-                  <div class="bg-purple-600 h-2 rounded-full" style="width: ${
-                    (macro.consumed / macro.target) * 100
-                  }%"></div>
-                </div>
-              </div>
-            `
-              )
-              .join("")}
-          </div>
-        </div>
-
-        <!-- Meals -->
-        <div class="bg-white rounded-lg p-4 mb-6 shadow">
-          <h3 class="text-lg font-semibold mb-3 text-green-600">
-            <i class="fas fa-utensils mr-2"></i>Repas de la journée
-          </h3>
-          <div class="space-y-2">
-            ${data.meals
-              .map(
-                (meal) => `
-              <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
-                <div>
-                  <span class="font-medium">${meal.name}</span>
-                  <span class="text-sm text-gray-600 ml-2">${meal.time}</span>
-                </div>
-                <span class="font-semibold text-blue-600">${meal.calories} kcal</span>
-              </div>
-            `
-              )
-              .join("")}
-          </div>
-        </div>
-
-        <!-- Hydration -->
-        <div class="bg-white rounded-lg p-4 shadow">
-          <h3 class="text-lg font-semibold mb-3 text-blue-600">
-            <i class="fas fa-tint mr-2"></i>Hydratation
-          </h3>
-          <div class="flex items-center justify-between">
-            <span>Consommation d'eau</span>
-            <span class="font-semibold">${data.hydration.consumed}${
-      data.hydration.unit
-    } / ${data.hydration.target}${data.hydration.unit}</span>
-          </div>
-          <div class="mt-2 bg-gray-200 rounded-full h-3">
-            <div class="bg-blue-500 h-3 rounded-full" style="width: ${
-              (data.hydration.consumed / data.hydration.target) * 100
-            }%"></div>
-          </div>
-        </div>
-      </div>
-    `;
+  function hideAllPreviewStates() {
+    document.getElementById("previewPlaceholder").classList.add("hidden");
+    document.getElementById("previewContent").classList.add("hidden");
+    document.getElementById("previewLoading").classList.add("hidden");
   }
 
   function updatePreviewStatus(text, classes) {
@@ -457,7 +316,7 @@
     statusElement.innerHTML = `<i class="fas fa-eye mr-1"></i>${text}`;
   }
 
-  function enableDownload() {
+  function enableDownloadButton() {
     const downloadBtn = document.getElementById("downloadReportBtn");
     downloadBtn.disabled = false;
     downloadBtn.classList.remove(
@@ -466,27 +325,488 @@
     );
   }
 
+  function createPreviewHTML(htmlContent, format, formatClass) {
+    return `
+      <div class="${formatClass} border rounded-lg p-6 bg-gray-50">
+        <div class="mb-4 text-right">
+          <span class="text-sm text-gray-600">Format: ${format.toUpperCase()}</span>
+        </div>
+        <div class="ai-generated-content" id="printable-content">
+          ${htmlContent}
+        </div>
+      </div>
+    `;
+  }
+
+  function createErrorHTML(errorMessage) {
+    return `
+      <div class="border rounded-lg p-6 bg-red-50">
+        <div class="text-center">
+          <i class="fas fa-exclamation-triangle text-red-500 text-2xl mb-3"></i>
+          <h4 class="text-lg font-medium text-red-900 mb-2">Erreur lors de la génération</h4>
+          <p class="text-red-700">${errorMessage}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  function applyContentStyling(previewContent) {
+    const aiContent = previewContent.querySelector(".ai-generated-content");
+    if (!aiContent) return;
+
+    styleElements(aiContent);
+    addIconsToHeaders(aiContent);
+  }
+
+  function styleElements(aiContent) {
+    const tables = aiContent.querySelectorAll("table");
+    tables.forEach((table) => {
+      table.className = "w-full border-collapse mb-6";
+      styleTableHeaders(table);
+      styleTableCells(table);
+    });
+
+    styleHeadings(aiContent);
+
+    styleLists(aiContent);
+
+    styleParagraphs(aiContent);
+
+    styleSections(aiContent);
+  }
+
+  function styleTableHeaders(table) {
+    const ths = table.querySelectorAll("th");
+    ths.forEach((th) => {
+      th.className =
+        "px-4 py-2 text-left border-b border-gray-200 bg-gray-50 font-semibold text-gray-700";
+    });
+  }
+
+  function styleTableCells(table) {
+    const tds = table.querySelectorAll("td");
+    tds.forEach((td) => {
+      td.className = "px-4 py-2 border-b border-gray-100";
+    });
+  }
+
+  function styleHeadings(aiContent) {
+    const h2s = aiContent.querySelectorAll("h2");
+    h2s.forEach((h2) => {
+      h2.className = "text-2xl font-bold text-gray-900 mb-4";
+    });
+
+    const h3s = aiContent.querySelectorAll("h3");
+    h3s.forEach((h3) => {
+      h3.className = "text-lg font-semibold mb-3 text-blue-600";
+    });
+  }
+
+  function styleLists(aiContent) {
+    const uls = aiContent.querySelectorAll("ul");
+    uls.forEach((ul) => {
+      ul.className = "list-disc list-inside mb-4 space-y-2";
+      const lis = ul.querySelectorAll("li");
+      lis.forEach((li) => {
+        li.className = "text-gray-700";
+      });
+    });
+  }
+
+  function styleParagraphs(aiContent) {
+    const ps = aiContent.querySelectorAll("p");
+    ps.forEach((p) => {
+      p.className = "text-gray-600 mb-3";
+    });
+  }
+
+  function styleSections(aiContent) {
+    const sections = aiContent.querySelectorAll("div");
+    sections.forEach((section) => {
+      if (section.querySelector("h3")) {
+        section.className = "bg-white rounded-lg p-4 mb-6 shadow";
+      }
+    });
+  }
+
+  function addIconsToHeaders(aiContent) {
+    const h3Icons = {
+      "Bilan Calorique": "🔥",
+      Macronutriments: "📊",
+      Repas: "🍽️",
+      Hydratation: "💧",
+      Recommandations: "💡",
+    };
+
+    const h3s = aiContent.querySelectorAll("h3");
+    h3s.forEach((h3) => {
+      const text = h3.textContent.trim();
+      for (const [key, icon] of Object.entries(h3Icons)) {
+        if (text.includes(key)) {
+          h3.innerHTML = `<i class="mr-2">${icon}</i>${text}`;
+          break;
+        }
+      }
+    });
+  }
+
   function downloadReport() {
     if (!currentReportData) {
       alert("Veuillez d'abord générer un rapport");
       return;
     }
 
-    const format = currentReportFormat;
-    const filename = `rapport_nutritionnel_${currentReportData.date.replace(
-      /\//g,
-      "_"
-    )}.${format}`;
+    const filename = generateFilename();
 
-    if (format === "html") {
+    if (currentReportFormat === "html") {
       downloadAsHTML(filename);
     } else {
       downloadAsPDF(filename);
     }
   }
 
+  function generateFilename() {
+    const dateString = currentReportData.date.replace(/\//g, "_");
+    return `rapport_nutritionnel_${dateString}`;
+  }
+
   function downloadAsHTML(filename) {
-    const htmlContent = `
+    const htmlContent = createFullHTMLDocument();
+    const blob = new Blob([htmlContent], { type: "text/html" });
+    downloadBlob(blob, filename + ".html");
+  }
+
+  async function downloadAsPDF(filename) {
+    try {
+      updatePreviewStatus("Génération PDF...", "bg-yellow-100 text-yellow-800");
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF("p", "mm", "a4");
+
+      const contentElement = document.getElementById("printable-content");
+      if (!contentElement) {
+        throw new Error("Content not found");
+      }
+
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 20;
+      const lineHeight = 7;
+      const maxWidth = pageWidth - margin * 2;
+      let currentY = margin;
+
+      doc.setFont("helvetica", "normal");
+
+      doc.setFontSize(22);
+      doc.setTextColor(31, 41, 55);
+      doc.text("Rapport Nutritionnel Hebdomadaire", pageWidth / 2, currentY, {
+        align: "center",
+      });
+
+      currentY += 10;
+      doc.setFontSize(12);
+      doc.setTextColor(107, 114, 128);
+      const weekStart = new Date(
+        Date.now() - 7 * 24 * 60 * 60 * 1000
+      ).toLocaleDateString("fr-FR");
+      doc.text(
+        `Période: ${weekStart} - ${currentReportData.date}`,
+        pageWidth / 2,
+        currentY,
+        {
+          align: "center",
+        }
+      );
+
+      currentY += 15;
+      doc.setDrawColor(59, 130, 246);
+      doc.setLineWidth(1);
+      doc.line(margin, currentY, pageWidth - margin, currentY);
+      currentY += 15;
+
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = contentElement.innerHTML;
+
+      const sections = tempDiv.children;
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
+        currentY = await processSectionToPDF(
+          doc,
+          section,
+          currentY,
+          margin,
+          maxWidth,
+          lineHeight,
+          pageWidth,
+          pageHeight
+        );
+
+        currentY += 10;
+
+        if (currentY > pageHeight - 40) {
+          doc.addPage();
+          currentY = margin;
+        }
+      }
+
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(10);
+        doc.setTextColor(107, 114, 128);
+        doc.text(
+          `Page ${i} sur ${totalPages}`,
+          pageWidth / 2,
+          pageHeight - 10,
+          { align: "center" }
+        );
+        doc.text("Généré par NutriTrack", pageWidth - margin, pageHeight - 10, {
+          align: "right",
+        });
+      }
+
+      doc.save(filename + ".pdf");
+      updatePreviewStatus("Prêt", "bg-green-100 text-green-800");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      updatePreviewStatus("Erreur PDF", "bg-red-100 text-red-800");
+      alert("Erreur lors de la génération du PDF: " + error.message);
+    }
+  }
+
+  async function processSectionToPDF(
+    doc,
+    section,
+    currentY,
+    margin,
+    maxWidth,
+    lineHeight,
+    pageWidth,
+    pageHeight
+  ) {
+    const tagName = section.tagName.toLowerCase();
+
+    switch (tagName) {
+      case "h2":
+        currentY = addHeadingToPDF(
+          doc,
+          section.textContent,
+          currentY,
+          margin,
+          maxWidth,
+          16,
+          true
+        );
+        break;
+      case "h3":
+        currentY = addHeadingToPDF(
+          doc,
+          section.textContent,
+          currentY,
+          margin,
+          maxWidth,
+          14,
+          false
+        );
+        break;
+      case "p":
+        currentY = addTextToPDF(
+          doc,
+          section.textContent,
+          currentY,
+          margin,
+          maxWidth,
+          lineHeight
+        );
+        break;
+      case "ul":
+        currentY = addListToPDF(
+          doc,
+          section,
+          currentY,
+          margin,
+          maxWidth,
+          lineHeight
+        );
+        break;
+      case "table":
+        currentY = await addTableToPDF(
+          doc,
+          section,
+          currentY,
+          margin,
+          maxWidth,
+          lineHeight
+        );
+        break;
+      case "div":
+        for (let child of section.children) {
+          currentY = await processSectionToPDF(
+            doc,
+            child,
+            currentY,
+            margin,
+            maxWidth,
+            lineHeight,
+            pageWidth,
+            pageHeight
+          );
+        }
+        break;
+    }
+
+    if (currentY > pageHeight - 40) {
+      doc.addPage();
+      return margin;
+    }
+
+    return currentY;
+  }
+
+  function addHeadingToPDF(
+    doc,
+    text,
+    currentY,
+    margin,
+    maxWidth,
+    fontSize,
+    isMajor
+  ) {
+    const cleanText = text.replace(/[🔥📊🍽️💧💡]/g, "").trim();
+
+    doc.setFontSize(fontSize);
+    doc.setFont("helvetica", "bold");
+
+    if (isMajor) {
+      doc.setTextColor(31, 41, 55);
+    } else {
+      doc.setTextColor(59, 130, 246);
+    }
+
+    doc.text(cleanText, margin, currentY);
+
+    if (isMajor) {
+      doc.setDrawColor(229, 231, 235);
+      doc.setLineWidth(0.5);
+      doc.line(margin, currentY + 2, margin + maxWidth, currentY + 2);
+    }
+
+    return currentY + fontSize * 0.8 + 5;
+  }
+
+  function addTextToPDF(doc, text, currentY, margin, maxWidth, lineHeight) {
+    if (!text || text.trim() === "") return currentY;
+
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(75, 85, 99);
+
+    const lines = doc.splitTextToSize(text, maxWidth);
+
+    for (const line of lines) {
+      doc.text(line, margin, currentY);
+      currentY += lineHeight;
+    }
+
+    return currentY + 3;
+  }
+
+  function addListToPDF(
+    doc,
+    listElement,
+    currentY,
+    margin,
+    maxWidth,
+    lineHeight
+  ) {
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(75, 85, 99);
+
+    const items = listElement.querySelectorAll("li");
+
+    for (const item of items) {
+      const text = item.textContent;
+      const lines = doc.splitTextToSize(`• ${text}`, maxWidth - 10);
+
+      for (let i = 0; i < lines.length; i++) {
+        if (i === 0) {
+          doc.text(lines[i], margin + 5, currentY);
+        } else {
+          doc.text(lines[i], margin + 10, currentY);
+        }
+        currentY += lineHeight;
+      }
+      currentY += 2;
+    }
+
+    return currentY + 3;
+  }
+
+  async function addTableToPDF(
+    doc,
+    tableElement,
+    currentY,
+    margin,
+    maxWidth,
+    lineHeight
+  ) {
+    const rows = tableElement.querySelectorAll("tr");
+    if (rows.length === 0) return currentY;
+
+    const columnCount = rows[0].querySelectorAll("th, td").length;
+    const columnWidth = maxWidth / columnCount;
+
+    const headerRow = rows[0];
+    const headers = headerRow.querySelectorAll("th");
+
+    if (headers.length > 0) {
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(55, 65, 81);
+      doc.setFillColor(249, 250, 251);
+
+      doc.rect(margin, currentY - 5, maxWidth, lineHeight + 2, "F");
+
+      for (let i = 0; i < headers.length; i++) {
+        const text = headers[i].textContent.trim();
+        doc.text(text, margin + i * columnWidth + 2, currentY);
+      }
+
+      currentY += lineHeight + 2;
+
+      doc.setDrawColor(229, 231, 235);
+      doc.setLineWidth(0.5);
+      doc.line(margin, currentY, margin + maxWidth, currentY);
+      currentY += 3;
+    }
+
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(75, 85, 99);
+
+    for (let i = headers.length > 0 ? 1 : 0; i < rows.length; i++) {
+      const cells = rows[i].querySelectorAll("td");
+
+      for (let j = 0; j < cells.length; j++) {
+        const text = cells[j].textContent.trim();
+        const cellText = doc.splitTextToSize(text, columnWidth - 4);
+        doc.text(cellText[0] || "", margin + j * columnWidth + 2, currentY);
+      }
+
+      currentY += lineHeight + 1;
+
+      if (i < rows.length - 1) {
+        doc.setDrawColor(243, 244, 246);
+        doc.setLineWidth(0.2);
+        doc.line(margin, currentY, margin + maxWidth, currentY);
+      }
+    }
+
+    return currentY + 5;
+  }
+
+  function createFullHTMLDocument() {
+    return `
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -494,73 +814,342 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rapport Nutritionnel - ${currentReportData.date}</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #3B82F6; padding-bottom: 20px; }
-        .section { margin-bottom: 30px; padding: 20px; border: 1px solid #E5E7EB; border-radius: 8px; }
-        .section h3 { color: #1F2937; margin-bottom: 15px; }
-        .calories-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; }
-        .macro-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F3F4F6; }
-        .meal-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F3F4F6; }
-        .progress-bar { width: 100%; height: 10px; background-color: #E5E7EB; border-radius: 5px; overflow: hidden; }
-        .progress-fill { height: 100%; background-color: #3B82F6; }
-        h2, h3 { color: #1F2937; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #E5E7EB; }
-        th { background-color: #F9FAFB; font-weight: 600; }
-        ul { list-style-type: disc; padding-left: 20px; }
-        li { margin-bottom: 5px; }
+        ${getHTMLDownloadStyles()}
     </style>
 </head>
 <body>
-${currentReportData.htmlContent || "<p>Contenu du rapport non disponible</p>"}
+    <div class="container">
+        <div class="header">
+            <h1>📊 Rapport Nutritionnel Hebdomadaire</h1>
+            <div class="date-info">
+                <span class="date-label">Période d'analyse:</span>
+                <span class="date-value">${new Date(
+                  Date.now() - 7 * 24 * 60 * 60 * 1000
+                ).toLocaleDateString("fr-FR")} - ${
+      currentReportData.date
+    }</span>
+            </div>
+            <div class="report-meta">
+                <span class="generated-by">Généré par NutriTrack</span>
+                <span class="generated-time">Le ${new Date().toLocaleString(
+                  "fr-FR"
+                )}</span>
+            </div>
+        </div>
+
+        <div class="content">
+            ${
+              currentReportData.htmlContent ||
+              "<p>Contenu du rapport non disponible</p>"
+            }
+        </div>
+
+        <div class="footer">
+            <p>Ce rapport a été généré automatiquement par l'intelligence artificielle de NutriTrack.</p>
+            <p>Pour toute question médicale, consultez un professionnel de santé.</p>
+        </div>
+    </div>
 </body>
 </html>`;
+  }
 
-    const blob = new Blob([htmlContent], { type: "text/html" });
+  function getHTMLDownloadStyles() {
+    return `
+        /* Reset and base styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #1F2937;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* Header styles */
+        .header {
+            background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            opacity: 0.1;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .date-info {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .date-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-right: 8px;
+        }
+
+        .date-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .report-meta {
+            font-size: 12px;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .generated-by, .generated-time {
+            display: block;
+            margin: 2px 0;
+        }
+
+        /* Content styles */
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            color: #1F2937;
+            font-size: 24px;
+            margin: 25px 0 15px 0;
+            border-bottom: 3px solid #3B82F6;
+            padding-bottom: 8px;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #3B82F6;
+            font-size: 18px;
+            margin: 20px 0 12px 0;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+            border-left: 4px solid #3B82F6;
+            border-radius: 0 8px 8px 0;
+            font-weight: 600;
+        }
+
+        p {
+            color: #4B5563;
+            margin-bottom: 12px;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        th {
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #F9FAFB;
+        }
+
+        tr:hover {
+            background-color: #F3F4F6;
+            transition: background-color 0.2s ease;
+        }
+
+        td {
+            font-size: 14px;
+            color: #4B5563;
+        }
+
+        /* List styles */
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 15px 0;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #4B5563;
+            padding: 8px 12px;
+            background: #F9FAFB;
+            border-left: 3px solid #10B981;
+            border-radius: 0 6px 6px 0;
+            transition: all 0.2s ease;
+        }
+
+        li:hover {
+            background: #F0FDF4;
+            transform: translateX(4px);
+        }
+
+        li:before {
+            content: '✓';
+            color: #10B981;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        strong {
+            color: #1F2937;
+            font-weight: 600;
+        }
+
+        /* Section styling */
+        .content > div {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #FEFEFE;
+            border-radius: 10px;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .content > div:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* Footer styles */
+        .footer {
+            background: #F8FAFC;
+            padding: 25px 40px;
+            border-top: 1px solid #E5E7EB;
+            text-align: center;
+            color: #6B7280;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            color: #6B7280;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                max-width: none;
+                margin: 0;
+            }
+
+            .header {
+                background: #3B82F6 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+
+            .content > div {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            h2, h3 {
+                page-break-after: avoid;
+            }
+
+            table {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .header, .content, .footer {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            h3 {
+                font-size: 16px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    `;
+  }
+
+  function downloadBlob(blob, filename) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }
-
-  function downloadAsPDF(filename) {
-    let pdfContent;
-
-    if (currentReportData.htmlContent) {
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = currentReportData.htmlContent;
-      pdfContent = `
-RAPPORT NUTRITIONNEL QUOTIDIEN
-Date: ${currentReportData.date}
-
-${
-  tempDiv.textContent ||
-  tempDiv.innerText ||
-  "Contenu du rapport non disponible"
-}
-`;
-    } else {
-      pdfContent = `
-RAPPORT NUTRITIONNEL QUOTIDIEN
-Date: ${currentReportData.date}
-
-Contenu du rapport non disponible.
-Veuillez régénérer le rapport.
-`;
-    }
-
-    const blob = new Blob([pdfContent], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename.replace(".pdf", ".txt");
-    a.click();
-    URL.revokeObjectURL(url);
-
-    alert(
-      "Note: Pour une vraie application, utilisez une bibliothèque PDF comme jsPDF"
-    );
   }
 </script>
