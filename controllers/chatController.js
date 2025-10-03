@@ -21,14 +21,12 @@ export async function saveMeal(req, res) {
   }
 
   const aiResponse = req.body.aiResponse;
-  console.log(aiResponse);
 
   try {
     // Check if Rate Limit 5/DAY
     const checkRateLimit = await Meal.rateLimit(req.session.user.id);
 
     const meal = new Meal(req.session.user.id, aiResponse);
-    console.log(meal);
 
     if (checkRateLimit) {
       return res.json({
