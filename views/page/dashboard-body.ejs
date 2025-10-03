@@ -156,38 +156,30 @@
   let currentReportData = null;
   let currentReportFormat = "pdf";
 
-  // Set today's date as default
   document.addEventListener("DOMContentLoaded", function () {
-    console.log("DOM loaded, initializing...");
     const today = new Date().toISOString().split("T")[0];
     const dateInput = document.getElementById("reportDate");
     if (dateInput) {
       dateInput.value = today;
-      console.log("Date set to:", today);
     }
 
-    // Add event listeners with error checking
     const generateBtn = document.getElementById("generateReportBtn");
     const downloadBtn = document.getElementById("downloadReportBtn");
 
     if (generateBtn) {
       generateBtn.addEventListener("click", generateReport);
-      console.log("Generate button listener added");
     } else {
       console.error("Generate button not found!");
     }
 
     if (downloadBtn) {
       downloadBtn.addEventListener("click", downloadReport);
-      console.log("Download button listener added");
     } else {
       console.error("Download button not found!");
     }
   });
 
-  // Generate report function
   function generateReport() {
-    console.log("Generate report function called");
     const reportDate = document.getElementById("reportDate").value;
     const reportType = document.getElementById("reportType").value;
     const reportFormat = document.getElementById("reportFormat").value;
@@ -197,21 +189,16 @@
       return;
     }
 
-    console.log("Generating report for:", reportDate, reportType, reportFormat);
-
-    // Show loading state
     showLoading();
 
-    // Update status
     updatePreviewStatus("Génération...", "bg-yellow-100 text-yellow-800");
 
-    // Call the backend API
     fetch("/rapport-service", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // Include session cookies
+      credentials: "include",
       body: JSON.stringify({
         reportType: reportType,
       }),
@@ -227,7 +214,6 @@
           throw new Error(data.message);
         }
 
-        // Use the AI-generated HTML content directly
         currentReportData = {
           date: new Date(reportDate).toLocaleDateString("fr-FR"),
           type: reportType,
@@ -237,14 +223,11 @@
 
         showDynamicPreview(data.rapport, reportFormat);
         enableDownload();
-        // updatePreviewStatus("Généré", "bg-green-100 text-green-800");
-        console.log("Report generated successfully");
       })
       .catch((error) => {
         console.error("Error generating report:", error);
         updatePreviewStatus("Erreur", "bg-red-100 text-red-800");
 
-        // Show error message
         const previewContent = document.getElementById("previewContent");
         previewContent.innerHTML = `
         <div class="border rounded-lg p-6 bg-red-50">
@@ -261,14 +244,12 @@
       });
   }
 
-  // Show loading state
   function showLoading() {
     document.getElementById("previewPlaceholder").classList.add("hidden");
     document.getElementById("previewContent").classList.add("hidden");
     document.getElementById("previewLoading").classList.remove("hidden");
   }
 
-  // Show dynamic preview content from AI service
   function showDynamicPreview(htmlContent, format) {
     document.getElementById("previewLoading").classList.add("hidden");
     document.getElementById("previewPlaceholder").classList.add("hidden");
@@ -288,10 +269,8 @@
     `;
     previewContent.classList.remove("hidden");
 
-    // Apply Tailwind styles to the AI-generated content
     const aiContent = previewContent.querySelector(".ai-generated-content");
     if (aiContent) {
-      // Style tables
       const tables = aiContent.querySelectorAll("table");
       tables.forEach((table) => {
         table.className = "w-full border-collapse mb-6";
@@ -306,7 +285,6 @@
         });
       });
 
-      // Style headings
       const h2s = aiContent.querySelectorAll("h2");
       h2s.forEach((h2) => {
         h2.className = "text-2xl font-bold text-gray-900 mb-4";
@@ -317,7 +295,6 @@
         h3.className = "text-lg font-semibold mb-3 text-blue-600";
       });
 
-      // Style lists
       const uls = aiContent.querySelectorAll("ul");
       uls.forEach((ul) => {
         ul.className = "list-disc list-inside mb-4 space-y-2";
@@ -327,13 +304,11 @@
         });
       });
 
-      // Style paragraphs
       const ps = aiContent.querySelectorAll("p");
       ps.forEach((p) => {
         p.className = "text-gray-600 mb-3";
       });
 
-      // Add background and styling to sections
       const sections = aiContent.querySelectorAll("div");
       sections.forEach((section, index) => {
         if (section.querySelector("h3")) {
@@ -341,7 +316,6 @@
         }
       });
 
-      // Add icons and styling to h3 elements
       const h3Icons = {
         "Bilan Calorique": "🔥",
         Macronutriments: "📊",
@@ -362,7 +336,6 @@
     }
   }
 
-  // Generate preview HTML
   function generatePreviewHTML(data, format) {
     const formatClass = format === "pdf" ? "pdf-preview" : "html-preview";
 
@@ -478,14 +451,12 @@
     `;
   }
 
-  // Update preview status
   function updatePreviewStatus(text, classes) {
     const statusElement = document.getElementById("previewStatus");
     statusElement.className = `inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${classes}`;
     statusElement.innerHTML = `<i class="fas fa-eye mr-1"></i>${text}`;
   }
 
-  // Enable download button
   function enableDownload() {
     const downloadBtn = document.getElementById("downloadReportBtn");
     downloadBtn.disabled = false;
@@ -495,9 +466,7 @@
     );
   }
 
-  // Download report function
   function downloadReport() {
-    console.log("Download report function called");
     if (!currentReportData) {
       alert("Veuillez d'abord générer un rapport");
       return;
@@ -516,7 +485,6 @@
     }
   }
 
-  // Download as HTML
   function downloadAsHTML(filename) {
     const htmlContent = `
 <!DOCTYPE html>
@@ -557,14 +525,10 @@ ${currentReportData.htmlContent || "<p>Contenu du rapport non disponible</p>"}
     URL.revokeObjectURL(url);
   }
 
-  // Download as PDF (simplified - in real app, you'd use a PDF library)
   function downloadAsPDF(filename) {
-    // For demo purposes, we'll create a simple text file with the content
-    // In a real application, you would use a library like jsPDF or send to backend
     let pdfContent;
 
     if (currentReportData.htmlContent) {
-      // Extract text content from HTML for PDF download
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = currentReportData.htmlContent;
       pdfContent = `
@@ -578,7 +542,6 @@ ${
 }
 `;
     } else {
-      // Fallback content
       pdfContent = `
 RAPPORT NUTRITIONNEL QUOTIDIEN
 Date: ${currentReportData.date}
@@ -592,7 +555,7 @@ Veuillez régénérer le rapport.
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = filename.replace(".pdf", ".txt"); // For demo, saving as txt
+    a.download = filename.replace(".pdf", ".txt");
     a.click();
     URL.revokeObjectURL(url);
 
