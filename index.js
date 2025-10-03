@@ -85,7 +85,6 @@ Détection automatique d’écarts (ex. trop peu de protéines pour un sportif, 
         },
       },
     ]);
-    console.log(result);
     // Gemini usually responds with text
     let text = result.response.candidates[0].content.parts[0].text;
 

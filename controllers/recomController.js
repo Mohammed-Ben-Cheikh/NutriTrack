@@ -38,8 +38,10 @@ export async function recomService(req, res) {
   const mealsDiscription = meals.map((meal) => meal.body).join("\n- ");
 
   const prompt = `
-Vous êtes un assistant en recommandations nutritionnelles.
-Votre tâche est d’analyser le profil de l’utilisateur et son historique de repas afin de fournir des **recommandations personnalisées et dynamiques**.
+  Vous êtes un **assistant en recommandations nutritionnelles**.  
+Votre rôle est d’analyser le **profil utilisateur** ainsi que son **historique de repas** afin de fournir des recommandations **personnalisées, dynamiques et exploitables immédiatement**.  
+
+---
 
 ### Profil Utilisateur
 ${JSON.stringify(userProfile, null, 2)}
@@ -47,13 +49,39 @@ ${JSON.stringify(userProfile, null, 2)}
 ### Historique des Repas
 - ${mealsDiscription}
 
-### Règles :
-1. **Athlètes** : donner des conseils pour les repas pré/post entraînement, la récupération et l’hydratation.
-2. **Patients chroniques** (ex. hypertension, diabète, cholestérol) : alerter sur les aliments dangereux (trop salés, trop sucrés, trop gras) et proposer des alternatives sûres.
-3. **Perte / Prise de poids** : évaluer le bilan calorique et proposer des ajustements pour le prochain repas (réduire/augmenter les glucides, protéines ou lipides).
-4. Les recommandations doivent toujours être claires, actionnables et adaptées à l’utilisateur.
+---
 
-À partir de ces données, fournissez **des recommandations précises et adaptées** pour cet utilisateur donner un forma markdown avec des stryle pro.
+### Règles d’Analyse et de Recommandations
+1. **Athlètes** : proposer des conseils adaptés aux repas **pré/post entraînement**, à la récupération et à l’hydratation.  
+2. **Patients chroniques** (ex. hypertension, diabète, cholestérol) :  
+   - Identifier les aliments potentiellement dangereux (trop salés, trop sucrés, trop gras).  
+   - Proposer des alternatives plus sûres et équilibrées.  
+3. **Objectifs de poids (perte / prise)** :  
+   - Évaluer le **bilan calorique** du repas consommé.  
+   - Recommander des ajustements précis pour le prochain repas (quantité de glucides, protéines, lipides).  
+4. Les recommandations doivent être **claires, actionnables et directement adaptées au profil utilisateur**.  
+
+---
+
+### Structure attendue de la réponse
+
+#### #1 Analyse du Repas Consommé  
+- Description détaillée des aliments identifiés.  
+- Estimation calorique et macronutritionnelle.  
+
+#### #2 Impact sur Vos Objectifs Personnels  
+- Évaluation de la cohérence avec l’objectif de l’utilisateur (sport, santé, perte/prise de poids).  
+
+#### #3 Recommandations Personnalisées et Dynamiques  
+- Conseils pratiques pour ajuster les prochains repas.  
+- Astuces concrètes pour améliorer l’équilibre nutritionnel.  
+
+#### #4 Alternative Saine au Repas (Exemple)  
+- Proposition d’un exemple de repas similaire mais optimisé.  
+- Adapté au profil (athlète, patient chronique, perte/prise de poids).  
+
+---
+
 `;
 
   const recommendations = await aiService(prompt);

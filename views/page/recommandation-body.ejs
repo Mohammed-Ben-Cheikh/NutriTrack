@@ -105,19 +105,6 @@
     <div id="resultsSection" class="bg-white rounded-lg shadow mt-6 hidden">
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center">
-          <svg
-            class="h-6 w-6 text-green-500 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
           <h3 class="text-lg font-semibold text-gray-900">
             Vos recommandations personnalisées
           </h3>
@@ -165,6 +152,15 @@
               <i class="fas fa-redo mr-2"></i>
               Nouvelles recommandations
             </button>
+            <div id="saveSection">
+              <button
+                id="saveRecommendationBtn"
+                class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+              >
+                <i class="fas fa-save mr-2"></i>
+                Enregistrer les recommandations
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -233,6 +229,7 @@
       this.initializeElements();
       this.setupEventListeners();
       this.aiResponse = null;
+      this.loadSavedRecommendation(); // Load saved recommendation on page load
     }
 
     initializeElements() {
@@ -334,31 +331,29 @@
         saveRecommendationBtn.innerHTML =
           '<i class="fas fa-spinner fa-spin mr-2"></i>Enregistrement...';
 
-        const response = await fetch("/save/recommandation", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ aiResponse: this.aiResponse }),
-        });
+        // Save to localStorage
+        const recommendationData = {
+          content: this.aiResponse,
+          timestamp: new Date().toISOString(),
+          date: new Date().toLocaleDateString("fr-FR", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        };
 
-        if (!response.ok) {
-          throw new Error(`Erreur HTTP: ${response.status}`);
-        }
+        localStorage.setItem(
+          "nutritrack_last_recommendation",
+          JSON.stringify(recommendationData)
+        );
 
-        const result = await response.json();
-
-        if (result.error) {
-          saveRecommendationBtn.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>${result.message}`;
-          saveRecommendationBtn.className =
-            "px-8 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md cursor-default transition-colors flex items-center justify-center";
-          saveRecommendationBtn.disabled = true;
-        } else if (result.success) {
-          saveRecommendationBtn.innerHTML = `<i class="fas fa-check mr-2"></i>${result.message}`;
-          saveRecommendationBtn.className =
-            "px-8 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md cursor-default transition-colors flex items-center justify-center";
-          saveRecommendationBtn.disabled = true;
-        }
+        // Show success message
+        saveRecommendationBtn.innerHTML = `<i class="fas fa-check mr-2"></i>Recommandation sauvegardée`;
+        saveRecommendationBtn.className =
+          "px-8 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md cursor-default transition-colors flex items-center justify-center";
+        saveRecommendationBtn.disabled = true;
       } catch (error) {
         console.error("Erreur lors de la sauvegarde:", error);
         this.showError(
@@ -373,6 +368,66 @@
       }
     }
 
+    loadSavedRecommendation() {
+      try {
+        const savedData = localStorage.getItem(
+          "nutritrack_last_recommendation"
+        );
+        if (savedData) {
+          const recommendationData = JSON.parse(savedData);
+          this.aiResponse = recommendationData.content;
+
+          // Update the results section to show it's a saved recommendation
+          this.showSavedResults(recommendationData);
+        }
+      } catch (error) {
+        console.error(
+          "Erreur lors du chargement de la recommandation sauvegardée:",
+          error
+        );
+      }
+    }
+
+    showSavedResults(recommendationData) {
+      // Show the saved recommendation
+      const content =
+        typeof recommendationData.content === "string"
+          ? recommendationData.content
+          : recommendationData.content.text ||
+            "Aucune recommandation disponible.";
+
+      this.recommendationResult.innerHTML = marked.parse(content);
+
+      // Update the header to indicate it's a saved recommendation
+      const resultsHeader =
+        this.resultsSection.querySelector(".p-6.border-b h3");
+      if (resultsHeader) {
+        resultsHeader.innerHTML = `
+          <div class="flex items-center">
+            <svg class="h-6 w-6 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V8z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
+            </svg>
+            <div>
+              <span class="text-lg font-semibold text-gray-900">Dernière recommandation sauvegardée</span>
+              <p class="text-sm text-gray-500 mt-1">Générée le ${recommendationData.date}</p>
+            </div>
+          </div>
+        `;
+      }
+
+      this.resultsSection.classList.remove("hidden");
+
+      // Update save button to show it's already saved
+      this.saveSection.innerHTML = `<button
+        class="px-8 py-3 bg-gray-400 text-white font-semibold rounded-lg shadow-md cursor-default transition-colors flex items-center justify-center"
+        disabled
+      >
+        <i class="fas fa-check mr-2"></i>
+        Déjà sauvegardée
+      </button>`;
+    }
+
     showResults(data) {
       // Si la réponse est une chaîne (texte markdown)
       const content =
@@ -382,6 +437,21 @@
 
       // Convertir le markdown en HTML
       this.recommendationResult.innerHTML = marked.parse(content);
+
+      // Update header for new recommendations
+      const resultsHeader =
+        this.resultsSection.querySelector(".p-6.border-b h3");
+      if (resultsHeader) {
+        resultsHeader.innerHTML = `
+          <div class="flex items-center">
+            <svg class="h-6 w-6 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-lg font-semibold text-gray-900">Vos recommandations personnalisées</span>
+          </div>
+        `;
+      }
+
       this.resultsSection.classList.remove("hidden");
 
       // Scroll vers les résultats
