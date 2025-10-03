@@ -1,7 +1,7 @@
 import express from "express";
 import { logout } from "../controllers/authController.js";
 import { chatBot, saveMeal } from "../controllers/chatController.js";
-import { rapports } from "../controllers/rapportsController.js";
+import { rapports, rapportService } from "../controllers/rapportsController.js";
 import {
   recommendation,
   recomService,
@@ -19,6 +19,7 @@ const router = express.Router();
 router.post("/auth/logout", logout);
 
 router.get("/rapports", rapports);
+router.post("/rapport-service", rapportService);
 
 router.get("/dashboard/user", userProfilPage);
 

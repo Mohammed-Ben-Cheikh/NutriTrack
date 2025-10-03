@@ -111,7 +111,7 @@
         </select>
       </div>
 
-      <!-- Format Selection (PDF only) -->
+      <!-- Format Selection -->
       <div>
         <label
           for="reportFormat"
@@ -121,10 +121,10 @@
         </label>
         <select
           id="reportFormat"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
-          disabled
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-          <option value="pdf" selected>PDF</option>
+          <option value="pdf">PDF</option>
+          <option value="html">HTML</option>
         </select>
       </div>
     </div>
@@ -153,30 +153,6 @@
   </div>
 </div>
 <script>
-  // Sample nutrition data for report generation
-  const sampleNutritionData = {
-    daily: {
-      date: new Date().toLocaleDateString("fr-FR"),
-      calories: {
-        consumed: 2150,
-        target: 2200,
-        remaining: 50,
-      },
-      macros: {
-        protein: { consumed: 85, target: 90, unit: "g" },
-        carbs: { consumed: 280, target: 300, unit: "g" },
-        fat: { consumed: 65, target: 70, unit: "g" },
-      },
-      meals: [
-        { name: "Petit-déjeuner", calories: 450, time: "08:00" },
-        { name: "Déjeuner", calories: 650, time: "12:30" },
-        { name: "Collation", calories: 200, time: "16:00" },
-        { name: "Dîner", calories: 850, time: "19:30" },
-      ],
-      hydration: { consumed: 1.8, target: 2.0, unit: "L" },
-    },
-  };
-
   let currentReportData = null;
   let currentReportFormat = "pdf";
 
@@ -229,26 +205,60 @@
     // Update status
     updatePreviewStatus("Génération...", "bg-yellow-100 text-yellow-800");
 
-    // Simulate API call delay
-    setTimeout(() => {
-      const reportData = generateReportContent(reportDate, reportType);
-      currentReportData = reportData;
-      currentReportFormat = reportFormat;
+    // Call the backend API
+    fetch("/rapport-service", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Include session cookies
+      body: JSON.stringify({
+        reportType: reportType,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.error) {
+          throw new Error(data.message);
+        }
 
-      showPreview(reportData, reportFormat);
-      enableDownload();
-      updatePreviewStatus("Généré", "bg-green-100 text-green-800");
-      console.log("Report generated successfully");
-    }, 2000);
-  }
+        // Use the AI-generated HTML content directly
+        currentReportData = {
+          date: new Date(reportDate).toLocaleDateString("fr-FR"),
+          type: reportType,
+          htmlContent: data.rapport,
+        };
+        currentReportFormat = reportFormat;
 
-  // Generate report content based on type
-  function generateReportContent(date, type) {
-    const data = { ...sampleNutritionData.daily };
-    data.date = new Date(date).toLocaleDateString("fr-FR");
-    data.type = type;
+        showDynamicPreview(data.rapport, reportFormat);
+        enableDownload();
+        // updatePreviewStatus("Généré", "bg-green-100 text-green-800");
+        console.log("Report generated successfully");
+      })
+      .catch((error) => {
+        console.error("Error generating report:", error);
+        updatePreviewStatus("Erreur", "bg-red-100 text-red-800");
 
-    return data;
+        // Show error message
+        const previewContent = document.getElementById("previewContent");
+        previewContent.innerHTML = `
+        <div class="border rounded-lg p-6 bg-red-50">
+          <div class="text-center">
+            <i class="fas fa-exclamation-triangle text-red-500 text-2xl mb-3"></i>
+            <h4 class="text-lg font-medium text-red-900 mb-2">Erreur lors de la génération</h4>
+            <p class="text-red-700">${error.message}</p>
+          </div>
+        </div>
+      `;
+        previewContent.classList.remove("hidden");
+        document.getElementById("previewLoading").classList.add("hidden");
+        document.getElementById("previewPlaceholder").classList.add("hidden");
+      });
   }
 
   // Show loading state
@@ -258,14 +268,98 @@
     document.getElementById("previewLoading").classList.remove("hidden");
   }
 
-  // Show preview content
-  function showPreview(data, format) {
+  // Show dynamic preview content from AI service
+  function showDynamicPreview(htmlContent, format) {
     document.getElementById("previewLoading").classList.add("hidden");
     document.getElementById("previewPlaceholder").classList.add("hidden");
 
     const previewContent = document.getElementById("previewContent");
-    previewContent.innerHTML = generatePreviewHTML(data, format);
+    const formatClass = format === "pdf" ? "pdf-preview" : "html-preview";
+
+    previewContent.innerHTML = `
+      <div class="${formatClass} border rounded-lg p-6 bg-gray-50">
+        <div class="mb-4 text-right">
+          <span class="text-sm text-gray-600">Format: ${format.toUpperCase()}</span>
+        </div>
+        <div class="ai-generated-content">
+          ${htmlContent}
+        </div>
+      </div>
+    `;
     previewContent.classList.remove("hidden");
+
+    // Apply Tailwind styles to the AI-generated content
+    const aiContent = previewContent.querySelector(".ai-generated-content");
+    if (aiContent) {
+      // Style tables
+      const tables = aiContent.querySelectorAll("table");
+      tables.forEach((table) => {
+        table.className = "w-full border-collapse mb-6";
+        const ths = table.querySelectorAll("th");
+        ths.forEach((th) => {
+          th.className =
+            "px-4 py-2 text-left border-b border-gray-200 bg-gray-50 font-semibold text-gray-700";
+        });
+        const tds = table.querySelectorAll("td");
+        tds.forEach((td) => {
+          td.className = "px-4 py-2 border-b border-gray-100";
+        });
+      });
+
+      // Style headings
+      const h2s = aiContent.querySelectorAll("h2");
+      h2s.forEach((h2) => {
+        h2.className = "text-2xl font-bold text-gray-900 mb-4";
+      });
+
+      const h3s = aiContent.querySelectorAll("h3");
+      h3s.forEach((h3) => {
+        h3.className = "text-lg font-semibold mb-3 text-blue-600";
+      });
+
+      // Style lists
+      const uls = aiContent.querySelectorAll("ul");
+      uls.forEach((ul) => {
+        ul.className = "list-disc list-inside mb-4 space-y-2";
+        const lis = ul.querySelectorAll("li");
+        lis.forEach((li) => {
+          li.className = "text-gray-700";
+        });
+      });
+
+      // Style paragraphs
+      const ps = aiContent.querySelectorAll("p");
+      ps.forEach((p) => {
+        p.className = "text-gray-600 mb-3";
+      });
+
+      // Add background and styling to sections
+      const sections = aiContent.querySelectorAll("div");
+      sections.forEach((section, index) => {
+        if (section.querySelector("h3")) {
+          section.className = "bg-white rounded-lg p-4 mb-6 shadow";
+        }
+      });
+
+      // Add icons and styling to h3 elements
+      const h3Icons = {
+        "Bilan Calorique": "🔥",
+        Macronutriments: "📊",
+        Repas: "🍽️",
+        Hydratation: "💧",
+        Recommandations: "💡",
+      };
+
+      h3s.forEach((h3) => {
+        const text = h3.textContent.trim();
+        for (const [key, icon] of Object.entries(h3Icons)) {
+          if (text.includes(key)) {
+            h3.innerHTML = `<i class="mr-2">${icon}</i>${text}`;
+            break;
+          }
+        }
+      });
+    }
   }
 
   // Generate preview HTML
@@ -441,12 +535,16 @@
         .meal-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F3F4F6; }
         .progress-bar { width: 100%; height: 10px; background-color: #E5E7EB; border-radius: 5px; overflow: hidden; }
         .progress-fill { height: 100%; background-color: #3B82F6; }
+        h2, h3 { color: #1F2937; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #E5E7EB; }
+        th { background-color: #F9FAFB; font-weight: 600; }
+        ul { list-style-type: disc; padding-left: 20px; }
+        li { margin-bottom: 5px; }
     </style>
 </head>
 <body>
-${generatePreviewHTML(currentReportData, "html")
-  .replace(/<div class="html-preview[^>]*>/, "")
-  .replace(/<\/div>$/, "")}
+${currentReportData.htmlContent || "<p>Contenu du rapport non disponible</p>"}
 </body>
 </html>`;
 
@@ -461,35 +559,34 @@ ${generatePreviewHTML(currentReportData, "html")
 
   // Download as PDF (simplified - in real app, you'd use a PDF library)
   function downloadAsPDF(filename) {
-    // For demo purposes, we'll create a simple text file
+    // For demo purposes, we'll create a simple text file with the content
     // In a real application, you would use a library like jsPDF or send to backend
-    const pdfContent = `
+    let pdfContent;
+
+    if (currentReportData.htmlContent) {
+      // Extract text content from HTML for PDF download
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = currentReportData.htmlContent;
+      pdfContent = `
 RAPPORT NUTRITIONNEL QUOTIDIEN
 Date: ${currentReportData.date}
 
-BILAN CALORIQUE:
-- Consommées: ${currentReportData.calories.consumed} kcal
-- Objectif: ${currentReportData.calories.target} kcal
-- Restantes: ${currentReportData.calories.remaining} kcal
-
-MACRONUTRIMENTS:
-${Object.entries(currentReportData.macros)
-  .map(
-    ([key, macro]) =>
-      `- ${key}: ${macro.consumed}${macro.unit} / ${macro.target}${macro.unit}`
-  )
-  .join("\n")}
-
-REPAS:
-${currentReportData.meals
-  .map((meal) => `- ${meal.name} (${meal.time}): ${meal.calories} kcal`)
-  .join("\n")}
-
-HYDRATATION:
-- Eau consommée: ${currentReportData.hydration.consumed}${
-      currentReportData.hydration.unit
-    } / ${currentReportData.hydration.target}${currentReportData.hydration.unit}
+${
+  tempDiv.textContent ||
+  tempDiv.innerText ||
+  "Contenu du rapport non disponible"
+}
 `;
+    } else {
+      // Fallback content
+      pdfContent = `
+RAPPORT NUTRITIONNEL QUOTIDIEN
+Date: ${currentReportData.date}
+
+Contenu du rapport non disponible.
+Veuillez régénérer le rapport.
+`;
+    }
 
     const blob = new Blob([pdfContent], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
