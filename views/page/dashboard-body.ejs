@@ -7,7 +7,6 @@
     format PDF ou HTML
   </p>
 </div>
-<!-- Report Preview Section -->
 <div class="bg-white rounded-lg shadow-lg border border-gray-200">
   <div class="p-4 sm:p-6 border-b border-gray-200">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -26,10 +25,8 @@
     </div>
   </div>
 
-  <!-- Preview Content -->
   <div class="p-6">
     <div id="reportPreview" class="min-h-64">
-      <!-- Default state -->
       <div id="previewPlaceholder" class="text-center py-12">
         <div
           class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4"
@@ -45,7 +42,6 @@
         </p>
       </div>
 
-      <!-- Loading state -->
       <div id="previewLoading" class="text-center py-12 hidden">
         <div
           class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4"
@@ -60,15 +56,11 @@
         </p>
       </div>
 
-      <!-- Preview content will be inserted here -->
-      <div id="previewContent" class="hidden">
-        <!-- Report content will be dynamically loaded here -->
-      </div>
+      <div id="previewContent" class="hidden"></div>
     </div>
   </div>
 </div>
 <br />
-<!-- Report Generation Controls -->
 <div class="bg-white rounded-lg shadow p-6 mb-8">
   <div class="mb-6">
     <h3 class="text-lg font-semibold text-gray-900 mb-4">
@@ -76,7 +68,6 @@
     </h3>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Date Selection -->
       <div>
         <label
           for="reportDate"
@@ -94,7 +85,6 @@
         />
       </div>
 
-      <!-- Report Type -->
       <div>
         <label
           for="reportType"
@@ -113,7 +103,6 @@
         </select>
       </div>
 
-      <!-- Format Selection -->
       <div>
         <label
           for="reportFormat"
@@ -131,7 +120,6 @@
       </div>
     </div>
 
-    <!-- Generate Button -->
     <div class="mt-6 flex flex-col sm:flex-row gap-4">
       <button
         id="generateReportBtn"
@@ -495,33 +483,76 @@
       const maxWidth = pageWidth - margin * 2;
       let currentY = margin;
 
-      doc.setFont("helvetica", "normal");
+      doc.setFillColor(59, 130, 246);
+      doc.rect(0, 0, pageWidth, 45, "F");
 
-      doc.setFontSize(22);
-      doc.setTextColor(31, 41, 55);
-      doc.text("Rapport Nutritionnel Hebdomadaire", pageWidth / 2, currentY, {
+      doc.setFillColor(255, 255, 255);
+      doc.circle(30, 25, 8, "F");
+      doc.setFontSize(12);
+      doc.setTextColor(59, 130, 246);
+      doc.text("NT", 30, 27, { align: "center" });
+
+      doc.setFontSize(10);
+      doc.setTextColor(255, 255, 255);
+      doc.text("NutriTrack", 42, 22);
+      doc.setFontSize(8);
+      doc.text("Nutrition Intelligence", 42, 27);
+
+      doc.setFontSize(24);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(255, 255, 255);
+      doc.text("RAPPORT NUTRITIONNEL", pageWidth / 2, 22, {
         align: "center",
       });
 
-      currentY += 10;
-      doc.setFontSize(12);
-      doc.setTextColor(107, 114, 128);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "normal");
+      doc.text("Analyse Hebdomadaire", pageWidth / 2, 30, {
+        align: "center",
+      });
+
+      currentY = 55;
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(226, 232, 240);
+      doc.rect(margin, currentY, maxWidth, 25, "FD");
+
+      currentY += 8;
+      doc.setFontSize(10);
+      doc.setTextColor(71, 85, 105);
+      doc.setFont("helvetica", "bold");
+      doc.text("Période d'analyse:", margin + 5, currentY);
+
       const weekStart = new Date(
         Date.now() - 7 * 24 * 60 * 60 * 1000
       ).toLocaleDateString("fr-FR");
+      doc.setFont("helvetica", "normal");
       doc.text(
-        `Période: ${weekStart} - ${currentReportData.date}`,
-        pageWidth / 2,
-        currentY,
-        {
-          align: "center",
-        }
+        `${weekStart} - ${currentReportData.date}`,
+        margin + 40,
+        currentY
       );
 
-      currentY += 15;
-      doc.setDrawColor(59, 130, 246);
-      doc.setLineWidth(1);
-      doc.line(margin, currentY, pageWidth - margin, currentY);
+      currentY += 6;
+      doc.setFont("helvetica", "bold");
+      doc.text("Type de rapport:", margin + 5, currentY);
+      doc.setFont("helvetica", "normal");
+
+      const reportTypeLabels = {
+        medical: "🏥 Suivi médical - Patients",
+        athlete: "🏃‍♂️ Suivi sportif - Athlètes",
+        weight: "⚖️ Gestion du poids",
+      };
+
+      const reportTypeText =
+        reportTypeLabels[currentReportData.type] || currentReportData.type;
+      doc.text(reportTypeText.replace(/[🏥🏃‍♂️⚖️]/g, ""), margin + 35, currentY);
+
+      currentY += 6;
+      doc.setFont("helvetica", "bold");
+      doc.text("Généré le:", margin + 5, currentY);
+      doc.setFont("helvetica", "normal");
+      doc.text(new Date().toLocaleString("fr-FR"), margin + 25, currentY);
+
       currentY += 15;
 
       const tempDiv = document.createElement("div");
@@ -552,15 +583,56 @@
       const totalPages = doc.internal.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         doc.setPage(i);
-        doc.setFontSize(10);
+
+        doc.setFillColor(248, 250, 252);
+        doc.rect(0, pageHeight - 20, pageWidth, 20, "F");
+
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(0.5);
+        doc.line(0, pageHeight - 20, pageWidth, pageHeight - 20);
+
+        doc.setFontSize(9);
         doc.setTextColor(107, 114, 128);
-        doc.text(
-          `Page ${i} sur ${totalPages}`,
-          pageWidth / 2,
-          pageHeight - 10,
-          { align: "center" }
+        doc.setFont("helvetica", "normal");
+
+        doc.text("Généré par NutriTrack", margin, pageHeight - 8);
+        doc.setFontSize(8);
+        doc.text(new Date().toLocaleString("fr-FR"), margin, pageHeight - 4);
+
+        doc.setFillColor(59, 130, 246);
+        doc.setDrawColor(59, 130, 246);
+        const pageText = `${i} / ${totalPages}`;
+        const pageTextWidth = doc.getTextWidth(pageText);
+        const pageBoxX = (pageWidth - pageTextWidth - 10) / 2;
+
+        doc.roundedRect(
+          pageBoxX,
+          pageHeight - 12,
+          pageTextWidth + 10,
+          8,
+          2,
+          2,
+          "FD"
         );
-        doc.text("Généré par NutriTrack", pageWidth - margin, pageHeight - 10, {
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "bold");
+        doc.text(pageText, pageBoxX + 5, pageHeight - 6);
+
+        doc.setFontSize(8);
+        doc.setTextColor(107, 114, 128);
+        doc.setFont("helvetica", "normal");
+        const reportTypeLabels = {
+          medical: "Suivi médical",
+          athlete: "Suivi sportif",
+          weight: "Gestion du poids",
+        };
+        const reportLabel =
+          reportTypeLabels[currentReportData.type] || "Rapport nutritionnel";
+        doc.text(reportLabel, pageWidth - margin, pageHeight - 8, {
+          align: "right",
+        });
+        doc.text("Version 1.0", pageWidth - margin, pageHeight - 4, {
           align: "right",
         });
       }
@@ -586,6 +658,13 @@
   ) {
     const tagName = section.tagName.toLowerCase();
 
+    if (tagName === "h2" || tagName === "h3") {
+      if (currentY > pageHeight - 60) {
+        doc.addPage();
+        currentY = margin + 50;
+      }
+    }
+
     switch (tagName) {
       case "h2":
         currentY = addHeadingToPDF(
@@ -597,6 +676,10 @@
           16,
           true
         );
+
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.3);
+        doc.line(margin + 2, currentY - 8, margin + maxWidth + 2, currentY - 8);
         break;
       case "h3":
         currentY = addHeadingToPDF(
@@ -640,6 +723,23 @@
         );
         break;
       case "div":
+        const hasHeading = section.querySelector("h3");
+        if (hasHeading) {
+          const sectionHeight = estimateSectionHeight(section, lineHeight);
+          doc.setFillColor(254, 254, 255);
+          doc.setDrawColor(229, 231, 235);
+          doc.roundedRect(
+            margin - 5,
+            currentY - 5,
+            maxWidth + 10,
+            Math.min(sectionHeight + 10, 100),
+            3,
+            3,
+            "FD"
+          );
+          currentY += 3;
+        }
+
         for (let child of section.children) {
           currentY = await processSectionToPDF(
             doc,
@@ -652,15 +752,49 @@
             pageHeight
           );
         }
+
+        if (hasHeading) {
+          currentY += 5;
+        }
         break;
     }
 
     if (currentY > pageHeight - 40) {
       doc.addPage();
-      return margin;
+      return margin + 50;
     }
 
     return currentY;
+  }
+
+  function estimateSectionHeight(section, lineHeight) {
+    let height = 0;
+    const elements = section.querySelectorAll("*");
+
+    elements.forEach((el) => {
+      const tagName = el.tagName.toLowerCase();
+      switch (tagName) {
+        case "h2":
+          height += 20;
+          break;
+        case "h3":
+          height += 16;
+          break;
+        case "p":
+          height += lineHeight * 2;
+          break;
+        case "li":
+          height += lineHeight + 2;
+          break;
+        case "tr":
+          height += lineHeight + 4;
+          break;
+        default:
+          height += lineHeight;
+      }
+    });
+
+    return Math.min(height, 150);
   }
 
   function addHeadingToPDF(
@@ -674,24 +808,48 @@
   ) {
     const cleanText = text.replace(/[🔥📊🍽️💧💡]/g, "").trim();
 
-    doc.setFontSize(fontSize);
-    doc.setFont("helvetica", "bold");
-
     if (isMajor) {
-      doc.setTextColor(31, 41, 55);
-    } else {
-      doc.setTextColor(59, 130, 246);
-    }
-
-    doc.text(cleanText, margin, currentY);
-
-    if (isMajor) {
+      doc.setFillColor(249, 250, 251);
       doc.setDrawColor(229, 231, 235);
-      doc.setLineWidth(0.5);
-      doc.line(margin, currentY + 2, margin + maxWidth, currentY + 2);
-    }
+      doc.rect(margin, currentY - 5, maxWidth, fontSize + 6, "FD");
 
-    return currentY + fontSize * 0.8 + 5;
+      doc.setFontSize(fontSize);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(31, 41, 55);
+      doc.text(cleanText, margin + 5, currentY + 2);
+
+      doc.setDrawColor(59, 130, 246);
+      doc.setLineWidth(2);
+      doc.line(
+        margin,
+        currentY + fontSize + 3,
+        margin + 60,
+        currentY + fontSize + 3
+      );
+
+      return currentY + fontSize + 12;
+    } else {
+      doc.setFillColor(239, 246, 255);
+      doc.rect(margin, currentY - 3, maxWidth, fontSize + 4, "F");
+
+      doc.setFillColor(59, 130, 246);
+      doc.rect(margin, currentY - 3, 3, fontSize + 4, "F");
+
+      doc.setFontSize(fontSize);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(59, 130, 246);
+
+      let icon = "";
+      if (cleanText.includes("Bilan")) icon = "🔥 ";
+      else if (cleanText.includes("Macro")) icon = "📊 ";
+      else if (cleanText.includes("Repas")) icon = "🍽️ ";
+      else if (cleanText.includes("Hydratation")) icon = "💧 ";
+      else if (cleanText.includes("Recommandations")) icon = "💡 ";
+
+      doc.text(icon + cleanText, margin + 8, currentY + 2);
+
+      return currentY + fontSize + 8;
+    }
   }
 
   function addTextToPDF(doc, text, currentY, margin, maxWidth, lineHeight) {
@@ -699,16 +857,27 @@
 
     doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(75, 85, 99);
+    doc.setTextColor(55, 65, 81);
 
-    const lines = doc.splitTextToSize(text, maxWidth);
+    const lines = doc.splitTextToSize(text, maxWidth - 10);
 
-    for (const line of lines) {
-      doc.text(line, margin, currentY);
+    if (lines.length > 1) {
+      doc.setFillColor(252, 252, 253);
+      doc.rect(
+        margin,
+        currentY - 3,
+        maxWidth,
+        lines.length * lineHeight + 4,
+        "F"
+      );
+    }
+
+    for (let i = 0; i < lines.length; i++) {
+      doc.text(lines[i], margin + 5, currentY);
       currentY += lineHeight;
     }
 
-    return currentY + 3;
+    return currentY + 5;
   }
 
   function addListToPDF(
@@ -721,26 +890,54 @@
   ) {
     doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(75, 85, 99);
 
     const items = listElement.querySelectorAll("li");
 
-    for (const item of items) {
-      const text = item.textContent;
-      const lines = doc.splitTextToSize(`• ${text}`, maxWidth - 10);
+    doc.setFillColor(250, 252, 254);
+    doc.setDrawColor(219, 234, 254);
+    doc.rect(
+      margin,
+      currentY - 3,
+      maxWidth,
+      items.length * (lineHeight + 3) + 6,
+      "FD"
+    );
 
-      for (let i = 0; i < lines.length; i++) {
-        if (i === 0) {
-          doc.text(lines[i], margin + 5, currentY);
+    currentY += 2;
+
+    for (let i = 0; i < items.length; i++) {
+      const text = items[i].textContent;
+
+      doc.setFillColor(59, 130, 246);
+      doc.circle(margin + 8, currentY - 1, 1.5, "F");
+
+      doc.setTextColor(55, 65, 81);
+      const lines = doc.splitTextToSize(text, maxWidth - 20);
+
+      for (let j = 0; j < lines.length; j++) {
+        if (j === 0) {
+          doc.text(lines[j], margin + 15, currentY);
         } else {
-          doc.text(lines[i], margin + 10, currentY);
+          doc.text(lines[j], margin + 15, currentY);
         }
-        currentY += lineHeight;
+        if (j < lines.length - 1) currentY += lineHeight;
       }
-      currentY += 2;
+
+      currentY += lineHeight + 3;
+
+      if (i < items.length - 1) {
+        doc.setDrawColor(229, 231, 235);
+        doc.setLineWidth(0.2);
+        doc.line(
+          margin + 10,
+          currentY - 1,
+          margin + maxWidth - 10,
+          currentY - 1
+        );
+      }
     }
 
-    return currentY + 3;
+    return currentY + 8;
   }
 
   async function addTableToPDF(
@@ -757,52 +954,100 @@
     const columnCount = rows[0].querySelectorAll("th, td").length;
     const columnWidth = maxWidth / columnCount;
 
+    doc.setFillColor(250, 250, 250);
+    doc.setDrawColor(226, 232, 240);
+    doc.rect(
+      margin - 2,
+      currentY - 8,
+      maxWidth + 4,
+      rows.length * (lineHeight + 3) + 16,
+      "FD"
+    );
+
     const headerRow = rows[0];
     const headers = headerRow.querySelectorAll("th");
 
     if (headers.length > 0) {
       doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(55, 65, 81);
-      doc.setFillColor(249, 250, 251);
+      doc.setTextColor(255, 255, 255);
 
-      doc.rect(margin, currentY - 5, maxWidth, lineHeight + 2, "F");
+      doc.setFillColor(59, 130, 246);
+      doc.rect(margin, currentY - 5, maxWidth, lineHeight + 6, "F");
 
       for (let i = 0; i < headers.length; i++) {
         const text = headers[i].textContent.trim();
-        doc.text(text, margin + i * columnWidth + 2, currentY);
+        doc.text(text, margin + i * columnWidth + 5, currentY + 1);
+
+        if (i < headers.length - 1) {
+          doc.setDrawColor(255, 255, 255);
+          doc.setLineWidth(0.5);
+          doc.line(
+            margin + (i + 1) * columnWidth,
+            currentY - 5,
+            margin + (i + 1) * columnWidth,
+            currentY + lineHeight + 1
+          );
+        }
       }
 
-      currentY += lineHeight + 2;
-
-      doc.setDrawColor(229, 231, 235);
-      doc.setLineWidth(0.5);
-      doc.line(margin, currentY, margin + maxWidth, currentY);
-      currentY += 3;
+      currentY += lineHeight + 6;
     }
 
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(75, 85, 99);
+    doc.setFontSize(10);
 
     for (let i = headers.length > 0 ? 1 : 0; i < rows.length; i++) {
       const cells = rows[i].querySelectorAll("td");
+      const isEvenRow = (i - 1) % 2 === 0;
+
+      if (isEvenRow) {
+        doc.setFillColor(248, 250, 252);
+        doc.rect(margin, currentY - 2, maxWidth, lineHeight + 4, "F");
+      }
+
+      doc.setTextColor(55, 65, 81);
 
       for (let j = 0; j < cells.length; j++) {
         const text = cells[j].textContent.trim();
-        const cellText = doc.splitTextToSize(text, columnWidth - 4);
-        doc.text(cellText[0] || "", margin + j * columnWidth + 2, currentY);
+        const cellText = doc.splitTextToSize(text, columnWidth - 8);
+
+        if (!isNaN(text) && text !== "") {
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(16, 185, 129);
+        } else {
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(55, 65, 81);
+        }
+
+        doc.text(cellText[0] || "", margin + j * columnWidth + 5, currentY + 1);
+
+        if (j < cells.length - 1) {
+          doc.setDrawColor(226, 232, 240);
+          doc.setLineWidth(0.3);
+          doc.line(
+            margin + (j + 1) * columnWidth,
+            currentY - 2,
+            margin + (j + 1) * columnWidth,
+            currentY + lineHeight + 2
+          );
+        }
       }
 
-      currentY += lineHeight + 1;
+      currentY += lineHeight + 4;
 
       if (i < rows.length - 1) {
-        doc.setDrawColor(243, 244, 246);
+        doc.setDrawColor(240, 242, 247);
         doc.setLineWidth(0.2);
-        doc.line(margin, currentY, margin + maxWidth, currentY);
+        doc.line(margin, currentY - 2, margin + maxWidth, currentY - 2);
       }
     }
 
-    return currentY + 5;
+    doc.setDrawColor(59, 130, 246);
+    doc.setLineWidth(1);
+    doc.line(margin, currentY, margin + maxWidth, currentY);
+
+    return currentY + 10;
   }
 
   function createFullHTMLDocument() {
